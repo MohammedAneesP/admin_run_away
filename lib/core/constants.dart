@@ -10,3 +10,13 @@ final kHeadingText = GoogleFonts.rocknRollOne(fontWeight: FontWeight.bold,fontSi
 
 final kSubTitleText = GoogleFonts.rocknRollOne(fontWeight: FontWeight.bold,fontSize: 16,color: kBlack);
 
+
+void snackBar(BuildContext context, String aText) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        aText,
+      ),
+    ),
+  );
+}

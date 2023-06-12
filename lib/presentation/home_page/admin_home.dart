@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
-import 'package:run_away_admin/presentation/cateegory/brand_add.dart';
+import 'package:run_away_admin/presentation/cateegory/adding_brand/brand_add.dart';
 import 'package:run_away_admin/presentation/product_page/product_details.dart';
 
 class AdminHome extends StatelessWidget {

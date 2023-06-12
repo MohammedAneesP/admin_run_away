@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -5,6 +8,25 @@ import 'package:image_picker/image_picker.dart';
 class ProductDetails extends StatelessWidget {
   ProductDetails({super.key});
   XFile? anImage;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController descriptController = TextEditingController();
+
+  // final  brandCollection =
+  //     FirebaseFirestore.instance.collection('admin');
+
+  // void addBrand({
+  //   required String name,
+  //   required String price,
+  //   required String description,
+  // }) {
+  //   final adding = {
+  //     "name": name,
+  //     "price": price,
+  //     "descrition": description,
+  //   };
+  //   brandCollection.add(adding);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,18 +116,21 @@ class ProductDetails extends StatelessWidget {
                 ),
                 content: Column(
                   children: [
-                    const TheTextField(
+                    TheTextField(
                       anLabelText: "Product name",
+                      anController: nameController,
                       forMaxLine: null,
                     ),
                     SizedBox(height: kHeight * 0.005),
-                    const TheTextField(
+                    TheTextField(
                       anLabelText: "Product price",
+                      anController: priceController,
                       forMaxLine: null,
                     ),
                     SizedBox(height: kHeight * 0.005),
-                    const TheTextField(
+                    TheTextField(
                       anLabelText: "Description",
+                      anController: descriptController,
                       forMaxLine: 5,
                     ),
                     SizedBox(height: kHeight * 0.008),
@@ -136,7 +161,13 @@ class ProductDetails extends StatelessWidget {
                     ),
                     SizedBox(height: kHeight * 0.015),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: ()  {
+                        // addBrand(
+                        //   name: nameController.text,
+                        //   price: priceController.text,
+                        //   description: descriptController.text,
+                        // );
+                        log(nameController.text);
                         Navigator.of(context).pop();
                       },
                       child: const Text(
@@ -226,13 +257,15 @@ class TheTextField extends StatelessWidget {
     super.key,
     required this.anLabelText,
     required this.forMaxLine,
+    required this.anController,
   });
   final String anLabelText;
   final int? forMaxLine;
-
+  final TextEditingController anController;
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: anController,
       textAlign: TextAlign.start,
       maxLines: forMaxLine,
       keyboardType: TextInputType.multiline,
