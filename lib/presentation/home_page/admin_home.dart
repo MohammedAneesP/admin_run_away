@@ -2,8 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
-import 'package:run_away_admin/presentation/cateegory/adding_brand/brand_add.dart';
-import 'package:run_away_admin/presentation/product_page/product_details.dart';
+import 'package:run_away_admin/presentation/brands/brand_details.dart';
 
 class AdminHome extends StatelessWidget {
   const AdminHome({super.key});
@@ -21,15 +20,6 @@ class AdminHome extends StatelessWidget {
           style: kTitleText,
         ),
         shadowColor: Colors.white.withOpacity(0),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              CupertinoIcons.bag,
-              color: kBlack,
-            ),
-          ),
-        ],
         leading: IconButton(
           onPressed: () {},
           icon: const Icon(
@@ -115,13 +105,7 @@ class AdminHome extends StatelessWidget {
                         style: kTitleText,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ProductDetails(),
-                            ),
-                          );
-                        },
+                        onTap: () {},
                         child: Container(
                           height: kHeight * 0.25,
                           width: kWidth * .45,
