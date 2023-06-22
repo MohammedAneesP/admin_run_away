@@ -4,6 +4,8 @@ import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
 import 'package:run_away_admin/presentation/brands/brand_details.dart';
 
+import 'widgets/stack_widget.dart';
+
 class AdminHome extends StatelessWidget {
   const AdminHome({super.key});
 
@@ -13,13 +15,13 @@ class AdminHome extends StatelessWidget {
     final kWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white.withOpacity(0),
+        backgroundColor: kWhite.withOpacity(0),
         centerTitle: true,
         title: Text(
           "Hello Admin..!",
           style: kTitleText,
         ),
-        shadowColor: Colors.white.withOpacity(0),
+        shadowColor: kWhite.withOpacity(0),
         leading: IconButton(
           onPressed: () {},
           icon: const Icon(
@@ -33,128 +35,69 @@ class AdminHome extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(
-                height: kHeight * 0.1,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              const Spacer(),
+              Column(
                 children: [
-                  Column(
-                    children: [
-                      Text(
-                        "Brands",
-                        style: kTitleText,
-                      ),
-                      Container(
-                        height: kHeight * 0.25,
-                        width: kWidth * .45,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                            20,
-                          ),
-                        ),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => BrandDetails(),
-                              ),
-                            );
-                          },
-                          child: Stack(
-                            alignment: AlignmentDirectional.center,
-                            children: [
-                              Positioned(
-                                left: 5,
-                                child: Transform.rotate(
-                                  angle: 12.53,
-                                  child: StackImage(
-                                    kHeight: kHeight * .16,
-                                    kWidth: kWidth * .22,
-                                    imageName: "assets/adidas.png",
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 5,
-                                child: Transform.rotate(
-                                  angle: 6.37,
-                                  child: StackImage(
-                                      kHeight: kHeight * .16,
-                                      kWidth: kWidth * .22,
-                                      imageName: "assets/nike.png"),
-                                ),
-                              ),
-                              Positioned(
-                                top: 28,
-                                child: StackImage(
-                                    kHeight: kHeight * .17,
-                                    kWidth: kWidth * .21,
-                                    imageName: "assets/puma.png"),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    "Categories",
+                    style: kTitleText,
                   ),
-                  Column(
-                    children: [
-                      Text(
-                        "Products",
-                        style: kTitleText,
+                  Container(
+                    height: kHeight * 0.25,
+                    width: kWidth * .45,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        20,
                       ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: kHeight * 0.25,
-                          width: kWidth * .45,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              20,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => BrandDetails(),
+                          ),
+                        );
+                      },
+                      child: Stack(
+                        alignment: AlignmentDirectional.center,
+                        children: [
+                          Positioned(
+                            left: 5,
+                            child: Transform.rotate(
+                              angle: 12.53,
+                              child: StackImage(
+                                kHeight: kHeight * .16,
+                                kWidth: kWidth * .22,
+                                imageName: "assets/adidas.png",
+                              ),
                             ),
                           ),
-                          child: Stack(
-                            alignment: AlignmentDirectional.center,
-                            children: [
-                              Positioned(
-                                left: 5,
-                                child: Transform.rotate(
-                                  angle: 12.53,
-                                  child: StackImage(
-                                    kHeight: kHeight * .16,
-                                    kWidth: kWidth * .22,
-                                    imageName: "assets/landing_pic_3.png",
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 5,
-                                child: Transform.rotate(
-                                  angle: 6.37,
-                                  child: StackImage(
-                                    kHeight: kHeight * .16,
-                                    kWidth: kWidth * .22,
-                                    imageName: "assets/landing_pic_2.png",
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                top: 28,
-                                child: StackImage(
-                                    kHeight: kHeight * .17,
-                                    kWidth: kWidth * .21,
-                                    imageName: "assets/landing_pic_1.png"),
-                              ),
-                            ],
+                          Positioned(
+                            right: 5,
+                            child: Transform.rotate(
+                              angle: 6.37,
+                              child: StackImage(
+                                  kHeight: kHeight * .16,
+                                  kWidth: kWidth * .22,
+                                  imageName: "assets/nike.png"),
+                            ),
                           ),
-                        ),
+                          Positioned(
+                            top: 28,
+                            child: StackImage(
+                                kHeight: kHeight * .17,
+                                kWidth: kWidth * .21,
+                                imageName: "assets/puma.png"),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-              SizedBox(height: kHeight * 0.03),
+              SizedBox(
+                height: kHeight * 0.05,
+              ),
               Row(
                 children: [
                   Text(
@@ -167,11 +110,12 @@ class AdminHome extends StatelessWidget {
               Container(
                 height: kHeight * .12,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: const [
+                  color: kWhite,
+                  boxShadow:  [
                     BoxShadow(
-                      color: Colors.black54,
-                      blurRadius: 2,
+                      color:kGrey,
+                      blurRadius: 1,
+                     
                     )
                   ],
                   borderRadius: BorderRadius.circular(
@@ -193,49 +137,19 @@ class AdminHome extends StatelessWidget {
                       height: kHeight * 0.75,
                       width: kWidth * 0.26,
                       decoration: const BoxDecoration(
-                          image: DecorationImage(
-                        image: AssetImage(
-                          "assets/landing_pic_3.png",
+                        image: DecorationImage(
+                          image: AssetImage(
+                            "assets/landing_pic_3.png",
+                          ),
+                          fit: BoxFit.cover,
                         ),
-                        fit: BoxFit.cover,
-                      )),
+                      ),
                     ),
                   ),
                 ),
-              )
+              ),
+              const Spacer()
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class StackImage extends StatelessWidget {
-  const StackImage(
-      {super.key,
-      required this.kHeight,
-      required this.kWidth,
-      required this.imageName});
-
-  final double kHeight;
-  final double kWidth;
-  final String imageName;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: kHeight,
-      width: kWidth,
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(color: Colors.grey.withOpacity(0.5), blurRadius: 5)
-        ],
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        image: DecorationImage(
-          image: AssetImage(
-            imageName,
           ),
         ),
       ),

@@ -60,6 +60,7 @@ flutter:
     - assets/yonex.png
     - assets/nike.png
     - assets/adidas.png
+    - assets/photography-icon-png-2382.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
   # For details regarding adding assets from package dependencies, see
