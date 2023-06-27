@@ -58,7 +58,7 @@ class _EditBrandState extends State<EditBrand> {
   @override
   Widget build(BuildContext context) {
     final kHeight = MediaQuery.of(context).size.height;
-    final kWidth = MediaQuery.of(context).size.width;
+ 
 
     return Scaffold(
       body: SafeArea(
@@ -100,13 +100,11 @@ class _EditBrandState extends State<EditBrand> {
                 },
                 child: anUpdateUrl == null
                     ? ContainerForNetworkImage(
-                        // kHeight: kHeight * .35,
-                        // kWidth: kWidth * 0.655,
+                        
                         imagePath: widget.brandImage,
                       )
                     : ContainerForImage(
-                        // kHeight: kHeight,
-                        // kWidth: kWidth,
+                       
                         imagePath: anUpdateUrl!.path,
                       ),
               ),

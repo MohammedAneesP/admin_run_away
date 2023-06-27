@@ -7,4 +7,4 @@ const kWhite = Colors.white;
 
 const kBlue = Colors.blue;
 
-final kGrey = Colors.grey;
+const kGrey = Colors.grey;
