@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
 import 'package:run_away_admin/presentation/brands/brand_details.dart';
-
-import 'widgets/stack_widget.dart';
+import 'package:run_away_admin/presentation/product_page/product_details.dart';
 
 class AdminHome extends StatelessWidget {
   const AdminHome({super.key});
@@ -14,6 +13,7 @@ class AdminHome extends StatelessWidget {
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: kWhite.withOpacity(0.95),
       appBar: AppBar(
         backgroundColor: kWhite.withOpacity(0),
         centerTitle: true,
@@ -25,74 +25,61 @@ class AdminHome extends StatelessWidget {
         leading: IconButton(
           onPressed: () {},
           icon: const Icon(
-            CupertinoIcons.circle_grid_3x3_fill,
+            CupertinoIcons.square_grid_2x2_fill,
             color: kBlack,
           ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              radius: kWidth * 0.055,
+              backgroundColor: kGrey.withOpacity(0.2),
+              child: IconButton(
+                  onPressed: () {}, icon: const Icon(CupertinoIcons.bag)),
+            ),
+          )
+        ],
       ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              const Spacer(),
-              Column(
+              SizedBox(height: kHeight * .1),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
-                    "Categories",
-                    style: kTitleText,
+                  HomeTwoImage(
+                    anOntap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => BrandDetails(),
+                        ),
+                      );
+                    },
+                    kHeight: kHeight * 0.25,
+                    kWidth: kWidth * .4,
+                    imageName: "assets/yonex.png",
+                    quoteText: "Never give up",
+                    titleText: "yonex",
+                    theTitle: "brands",
                   ),
-                  Container(
-                    height: kHeight * 0.25,
-                    width: kWidth * .45,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        20,
-                      ),
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => BrandDetails(),
-                          ),
-                        );
-                      },
-                      child: Stack(
-                        alignment: AlignmentDirectional.center,
-                        children: [
-                          Positioned(
-                            left: 5,
-                            child: Transform.rotate(
-                              angle: 12.53,
-                              child: StackImage(
-                                kHeight: kHeight * .16,
-                                kWidth: kWidth * .22,
-                                imageName: "assets/adidas.png",
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            right: 5,
-                            child: Transform.rotate(
-                              angle: 6.37,
-                              child: StackImage(
-                                  kHeight: kHeight * .16,
-                                  kWidth: kWidth * .22,
-                                  imageName: "assets/nike.png"),
-                            ),
-                          ),
-                          Positioned(
-                            top: 28,
-                            child: StackImage(
-                                kHeight: kHeight * .17,
-                                kWidth: kWidth * .21,
-                                imageName: "assets/puma.png"),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  HomeTwoImage(
+                    anOntap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ProductDetails(),
+                        ),
+                      );
+                    },
+                    kHeight: kHeight * 0.25,
+                    kWidth: kWidth * .4,
+                    imageName: "assets/landing_pic_2.png",
+                    quoteText: "runner boost",
+                    titleText: "air max",
+                    theTitle: "products",
+                  )
                 ],
               ),
               SizedBox(
@@ -110,20 +97,13 @@ class AdminHome extends StatelessWidget {
               Container(
                 height: kHeight * .12,
                 decoration: BoxDecoration(
-                  color: kWhite,
-                  boxShadow:  [
-                    BoxShadow(
-                      color:kGrey,
-                      blurRadius: 1,
-                     
-                    )
-                  ],
+                  color: kWhite.withOpacity(0.95),
                   borderRadius: BorderRadius.circular(
                     20,
                   ),
                 ),
                 child: SizedBox(
-                  height: double.infinity,
+                  height: kWidth,
                   child: ListTile(
                     title: Text(
                       "Nike Air Jordan",
@@ -152,6 +132,77 @@ class AdminHome extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class HomeTwoImage extends StatelessWidget {
+  const HomeTwoImage({
+    super.key,
+    required this.kHeight,
+    required this.kWidth,
+    required this.imageName,
+    required this.quoteText,
+    required this.titleText,
+    required this.theTitle,
+    required this.anOntap,
+  });
+
+  final double kHeight;
+  final double kWidth;
+  final String imageName;
+  final String quoteText;
+  final String titleText;
+  final String theTitle;
+  final VoidCallback anOntap;
+
+  @override
+  Widget build(BuildContext context) {
+    final kHeight = MediaQuery.of(context).size.height;
+    final kWidth = MediaQuery.of(context).size.width;
+    return SizedBox(
+      child: Column(
+        children: [
+          Text(theTitle.toUpperCase(), style: kSubTitleText),
+          SizedBox(
+            height: kHeight * 0.02,
+          ),
+          GestureDetector(
+            onTap: anOntap,
+            child: Container(
+              height: kHeight * .25,
+              width: kWidth * .4,
+              decoration: BoxDecoration(
+                color: kWhite.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(
+                  20,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: kHeight * .17,
+                      width: kWidth * .4,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage(
+                              imageName,
+                            ),
+                            fit: BoxFit.cover),
+                      ),
+                    ),
+                    Text(quoteText.toUpperCase(), style: kitalicText),
+                    Text(titleText.toUpperCase(), style: kSubTitleText),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

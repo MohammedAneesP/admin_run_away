@@ -5,7 +5,6 @@ import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
 import 'package:run_away_admin/presentation/brands/add_edit_brand/brand_adding.dart';
 import 'package:run_away_admin/presentation/brands/add_edit_brand/brand_edit.dart';
-import 'package:run_away_admin/presentation/product_page/product_details.dart';
 import 'widgets/buttons.dart';
 
 class BrandDetails extends StatelessWidget {
@@ -15,7 +14,7 @@ class BrandDetails extends StatelessWidget {
 
   final TextEditingController brandUpdateController = TextEditingController();
 
-  final brandCollection = FirebaseFirestore.instance.collection('admin');
+  final brandCollection = FirebaseFirestore.instance.collection('brands');
 
   @override
   Widget build(BuildContext context) {
@@ -115,25 +114,14 @@ class BrandDetails extends StatelessWidget {
                             ),
                           ],
                         ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetails(
-                                    anId: brandSnapshot.id,
-                                    brandName: brandSnapshot["brandName"]),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            height: kHeight * .17,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                    brandSnapshot["imageName"],
-                                  ),
-                                  fit: BoxFit.contain),
-                            ),
+                        Container(
+                          height: kHeight * .17,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                  brandSnapshot["imageName"],
+                                ),
+                                fit: BoxFit.contain),
                           ),
                         ),
                         SizedBox(

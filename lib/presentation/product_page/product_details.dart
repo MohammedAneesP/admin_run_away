@@ -1,46 +1,41 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
+import 'package:run_away_admin/presentation/brands/widgets/buttons.dart';
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_adding.dart';
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_edit.dart';
 
 class ProductDetails extends StatelessWidget {
-  final String anId;
-  final String brandName;
-  const ProductDetails({super.key, required this.anId, required this.brandName});
-
+  const ProductDetails({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
-    final brandRef = FirebaseFirestore.instance
-        .collection("admin")
-        .doc(anId)
-        .collection("shoe");
+    final productRef = FirebaseFirestore.instance.collection("products");
 
     return Scaffold(
+      backgroundColor: kWhite.withOpacity(0.95),
       floatingActionButton: FloatingActionButton(
         child: const Icon(CupertinoIcons.add),
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ProductAddingScreen(
-                anId: anId,
-              ),
+              builder: (context) => const ProductAddingScreen(),
             ),
           );
         },
       ),
       appBar: AppBar(
         shadowColor: kWhite.withOpacity(0),
-        backgroundColor: kWhite,
+        backgroundColor: kWhite.withOpacity(0),
         centerTitle: true,
         title: Text(
-          brandName.toUpperCase(),
+          "Products".toUpperCase(),
           style: kTitleText,
         ),
         leading: IconButton(
@@ -56,26 +51,30 @@ class ProductDetails extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: StreamBuilder(
-          stream: brandRef.snapshots(),
+          stream: productRef.snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return GridView.builder(
-
                 itemCount: snapshot.data!.docs.length,
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 250,
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 15,
                   childAspectRatio: 5,
-                  mainAxisExtent: 300,
+                  mainAxisExtent: 240,
                 ),
                 itemBuilder: (context, index) {
                   final productSnap = snapshot.data!.docs[index];
+                  final brandName = FirebaseFirestore.instance
+                      .collection("brands")
+                      .doc(productSnap["brandId"]);
+                 
+
                   return Container(
                     height: kHeight * 1,
                     width: kWidth * 1,
                     decoration: BoxDecoration(
-                      color: kBlack.withOpacity(0.1),
+                      color: kWhite,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
@@ -84,64 +83,54 @@ class ProductDetails extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              IconButton(
-                                icon: const Icon(
-                                  CupertinoIcons.delete,
-                                ),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Text(
-                                        "Do you want to delete this product ?",
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () async {
-                                              await brandRef
-                                                  .doc(snapshot
-                                                      .data!.docs[index].id)
-                                                  .delete();
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text("YES")),
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text("NO"))
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(CupertinoIcons.pencil),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => ProductEdit(
-                                        brandId: anId,
-                                        productId: productSnap["id"],
-                                        productName: productSnap["itemName"],
-                                        description: productSnap["description"],
-                                        productPrice: productSnap["price"],
-                                        listOfImages:
-                                            productSnap["productImages"],
-                                        shoeSizes: productSnap["shoeSize"],
+                              PopupMenuButton(
+                                icon: const Icon(Icons.more_vert_sharp),
+                                itemBuilder: (context) {
+                                  return [
+                                    PopupMenuItem(
+                                      child: DeleteDocButton(
+                                        theDeleteId: productSnap.id,
+                                        anCollection: productRef,
                                       ),
                                     ),
-                                  );
+                                    PopupMenuItem(
+                                      child: AnEditButton(
+                                        anOnPressed: ()async {
+                                         
+                                         await Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) => ProductEdit(
+                                                 brandId: productSnap["brandId"],
+                                                productId:
+                                                    productSnap["productId"],
+                                                productName:
+                                                    productSnap["itemName"],
+                                                productPrice:
+                                                    productSnap["price"],
+                                                description:
+                                                    productSnap["description"],
+                                                listOfImages: productSnap[
+                                                    "productImages"],
+                                                shoeSizes:
+                                                    productSnap["shoeSize"],
+                                              ),
+                                            ),
+                                          );
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ),
+                                  ];
                                 },
-                              ),
+                              )
                             ],
                           ),
                           GestureDetector(
                             onTap: () {},
                             child: Container(
-                              height: kHeight * .17,
+                              height: kHeight * .131,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image: NetworkImage(
@@ -151,8 +140,33 @@ class ProductDetails extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Text("${productSnap["itemName"]}".toUpperCase()),
-                          Text("Price : ${productSnap["price"]}"),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                StreamBuilder(
+                                  stream: brandName.snapshots(),
+                                  builder: (context, AsyncSnapshot snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data["brandName"]
+                                            .toString()
+                                            .toUpperCase(),
+                                        style: kitalicSmallText,
+                                      );
+                                    }
+                                    return const Text("Loading ... ");
+                                  },
+                                ),
+                                Text(
+                                  "${productSnap["itemName"]}".toUpperCase(),
+                                  style: kSubTitleText,
+                                ),
+                                Text("Price : ${productSnap["price"]}"),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),

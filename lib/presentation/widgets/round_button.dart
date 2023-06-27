@@ -13,13 +13,14 @@ class _SizeButtonState extends State<SizeButton> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40,
-      width: 50,
+      height: 46,
+      width: 62,
       child: OutlinedButton(
         style: ButtonStyle(
+          side: const MaterialStatePropertyAll(BorderSide.none),
           elevation: MaterialStateProperty.all(5),
           shadowColor: MaterialStateProperty.all(
-            kGrey, // Set the desired shadow color
+            kGrey,
           ),
           shape: const MaterialStatePropertyAll(
             CircleBorder(
@@ -40,7 +41,8 @@ class _SizeButtonState extends State<SizeButton> {
         },
         child: Text(
           widget.anSize.toString(),
-          style: TextStyle(
+          style: TextStyle(fontSize: 10,
+          
             color: widget.sizeList.contains(widget.anSize)
                 ? kWhite
                 : kBlue,

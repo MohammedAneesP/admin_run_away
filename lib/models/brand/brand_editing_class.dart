@@ -1,23 +1,17 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class BrandAdding {
-  String anImageUrl;
-  final String anBrandName;
-  final String anId;
-  final CollectionReference anColectRef;
-
-  BrandAdding({
-    required this.anImageUrl,
-    required this.anBrandName,
-    required this.anId,
-    required this.anColectRef,
+class EditingBrand {
+  final String brandId;
+  final String brandNameUp;
+  final String imageUrlUp;
+  final CollectionReference collectionName;
+  EditingBrand({
+    required this.brandId,
+    required this.brandNameUp,
+    required this.imageUrlUp,
+    required this.collectionName,
   }) {
-    final addingData = {
-      "imageName": anImageUrl,
-      "brandName": anBrandName,
-      "brandId": anId,
-    };
-    anColectRef.doc(anId).set(addingData);
+    final updateData = {"imageName": imageUrlUp, "brandName": brandNameUp};
+    collectionName.doc(brandId).update(updateData);
   }
 }

@@ -11,6 +11,10 @@ final kHeadingText = GoogleFonts.roboto(
 final kSubTitleText = GoogleFonts.roboto(
     fontWeight: FontWeight.bold, fontSize: 16, color: kBlack);
 
+final kitalicText = GoogleFonts.roboto(fontStyle: FontStyle.italic,fontWeight: FontWeight.w300,fontSize: 16,color: kBlue);
+final kitalicSmallText = GoogleFonts.roboto(fontStyle: FontStyle.italic,fontWeight: FontWeight.w300,fontSize: 14,color: kBlue);
+
+
 final buttonStyleRound = ButtonStyle(
   shape: const MaterialStatePropertyAll(
     StadiumBorder(),

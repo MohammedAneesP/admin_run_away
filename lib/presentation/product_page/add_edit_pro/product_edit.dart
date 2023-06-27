@@ -1,14 +1,16 @@
+import 'dart:developer';
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:run_away_admin/core/constants.dart';
+import 'package:run_away_admin/models/product/updating_product_class.dart';
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_adding.dart';
+import 'package:run_away_admin/presentation/widgets/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/round_button.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
-import '../../../models/product/updating_product_class.dart';
 
 class ProductEdit extends StatefulWidget {
   final String brandId;
@@ -52,11 +54,26 @@ class _ProductEditState extends State<ProductEdit> {
     super.initState();
   }
 
+  final brandREf = FirebaseFirestore.instance.collection("brands");
+
+  String? anSelected;
+
+  Set <String> brandList = {};
+
+  Set <String> brandId = {};
+
   @override
   Widget build(BuildContext context) {
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "Edit".toUpperCase(),
+          style: kHeadingText,
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -65,18 +82,22 @@ class _ProductEditState extends State<ProductEdit> {
                 SizedBox(
                   height: kHeight * 0.3,
                   width: kWidth * 0.9,
-                  child: ListView.builder(
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) =>
+                        SizedBox(width: kWidth * 0.02),
                     scrollDirection: Axis.horizontal,
                     itemCount: imageList.length,
                     itemBuilder: (context, index) {
                       return Stack(
                         children: [
-                          CircleAvatar(
-                              radius: 120,
-                              backgroundImage: NetworkImage(imageList[index])),
+                          ContainerForNetworkImage(
+                            // kHeight: kHeight * .8,
+                            // kWidth: kWidth * .9,
+                            imagePath: imageList[index],
+                          ),
                           Positioned(
                             top: 200,
-                            left: 185,
+                            left: 225,
                             child: IconButton(
                               onPressed: () {
                                 setState(() {
@@ -162,16 +183,14 @@ class _ProductEditState extends State<ProductEdit> {
                   anType: TextInputType.name,
                 ),
                 SizedBox(height: kHeight * 0.008),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 320, 0),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 320, 0),
                   child: Text(
                     "Size :",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    style: kSubTitleText,
                   ),
                 ),
-                SizedBox(
-                  height: kHeight * 0.02,
-                ),
+                SizedBox(height: kHeight * 0.01),
                 Row(
                   children: [
                     SizeButton(anSize: shoeSize[0], sizeList: editSizeList),
@@ -180,20 +199,62 @@ class _ProductEditState extends State<ProductEdit> {
                     SizeButton(anSize: shoeSize[3], sizeList: editSizeList),
                     SizeButton(anSize: shoeSize[4], sizeList: editSizeList),
                     SizeButton(anSize: shoeSize[5], sizeList: editSizeList),
-                    SizeButton(anSize: shoeSize[6], sizeList: editSizeList),
                   ],
                 ),
+                SizedBox(height: kHeight * 0.01),
+                StreamBuilder(
+                  stream: brandREf.snapshots(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      final brandSnapShot = snapshot.data!.docs;
+
+                      for (var i = 0; i < brandSnapShot.length; i++) {
+                        brandList.add(brandSnapShot[i]["brandName"].toString());
+                        brandId.add(brandSnapShot[i]["brandId"].toString());
+                      }
+
+                      return DropdownButton<String>(
+                        value: anSelected,
+                        items: brandList
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            anSelected = value;
+                          });
+                        },
+                      );
+                    }
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+                ),
                 ElevatedButton(
-                  style: buttonStyleRound,
-                    onPressed: ()async {
-                     UpdatingProducts(
-                        brandId: widget.brandId,
+                    style: buttonStyleRound,
+                    onPressed: () async {
+                      final forBrandId = brandId.toList();
+                      final forBrandName = brandList.toList();
+                      log(forBrandId.toString());
+                      log(forBrandName.toString());
+
+                      final theIndex = forBrandName
+                          .indexWhere((element) => element == anSelected);
+
+                      log(theIndex.toString());
+                      UpdatingProducts(
+                        brandId: forBrandId[theIndex],
                         productId: widget.productId,
                         productName: nameController.text,
                         productPrize: priceController.text,
                         productDescription: descriptController.text,
                         imageList: imageList,
                         shoeSize: editSizeList,
+
                       );
                       Navigator.pop(context);
                     },

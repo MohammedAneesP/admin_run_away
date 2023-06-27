@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UpdatingProducts {
@@ -7,10 +6,11 @@ class UpdatingProducts {
   final String productDescription;
   final List<dynamic> imageList;
   final List<dynamic> shoeSize;
-  final String brandId;
+   final String brandId;
   final String productId;
   UpdatingProducts(
-      {required this.brandId,
+      {
+       required this.brandId,
       required this.productId,
       required this.productName,
       required this.productPrize,
@@ -19,15 +19,14 @@ class UpdatingProducts {
       required this.shoeSize}) {
     final updateProduct = {
       "itemName": productName,
+      "brandId":brandId,
       "price": productPrize,
       "description": productDescription,
       "productImages": imageList,
       "shoeSize": shoeSize,
     };
     FirebaseFirestore.instance
-        .collection("admin")
-        .doc(brandId)
-        .collection("shoe")
+        .collection("products")
         .doc(productId)
         .update(updateProduct);
   }

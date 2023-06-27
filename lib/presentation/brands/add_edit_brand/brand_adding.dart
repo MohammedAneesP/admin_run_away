@@ -7,8 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
 import 'package:run_away_admin/models/brand/brand_adding_class.dart';
+import 'package:run_away_admin/presentation/widgets/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
-
 
 class AddingData extends StatefulWidget {
   const AddingData({super.key});
@@ -24,13 +24,27 @@ class _AddingDataState extends State<AddingData> {
 
   final TextEditingController brandController = TextEditingController();
 
-  final brandCollection = FirebaseFirestore.instance.collection('admin');
+  final brandCollection = FirebaseFirestore.instance.collection('brands');
 
   @override
   Widget build(BuildContext context) {
     final kHeight = MediaQuery.of(context).size.height;
-
+    final kWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: kWhite.withOpacity(0),
+        shadowColor: Colors.transparent,
+        centerTitle: true,
+        title: Text("Add new".toUpperCase(),style: kTitleText,),
+        leading: IconButton(
+            icon: const Icon(
+              CupertinoIcons.back,
+              color: kBlack,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            }),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -40,22 +54,20 @@ class _AddingDataState extends State<AddingData> {
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      forBottomSheet(context, kHeight);
+                      forBottomSheet(context, kHeight,kWidth);
                     },
                     child: anImage == null
                         ? CircleAvatar(
                             radius: kHeight * 0.13,
-                            backgroundColor: kGrey,
-                            child:  Icon(
+                            backgroundColor: kBlack.withOpacity(0.1),
+                            child: const Icon(
                               Icons.add_a_photo_outlined,
                               size: 50,
-                              color: kGrey.withOpacity(0.5),
+                              color: kBlack,
                             ),
                           )
-                        : CircleAvatar(
-                            radius: 120,
-                            backgroundImage: FileImage(File(anImage!.path)),
-                          ),
+                        : ContainerForImage( imagePath:anImage!.path),
+                        
                   ),
                   SizedBox(height: kHeight * 0.02),
                   TheTextField(
@@ -71,20 +83,12 @@ class _AddingDataState extends State<AddingData> {
                       ),
                     ),
                     onPressed: () async {
-                      final uniqueName = DateTime.now().toString();
-                      final fireStorageRef = FirebaseStorage.instance;
-                      final file = File(anImage!.path);
-                      final toStorage = await fireStorageRef
-                          .ref()
-                          .child("image/$uniqueName")
-                          .putFile(file);
-                      final downLoadUrl = await toStorage.ref.getDownloadURL();
-                      anUrl = downLoadUrl;
-                      BrandAdding(
-                        anImageUrl: anUrl,
-                        anBrandName: brandController.text,
-                        anId: brandCollection.doc().id,
-                        anColectRef: brandCollection,
+                      addToFire(
+                        anImage,
+                        anUrl,
+                        brandCollection,
+                        brandCollection.doc().id,
+                        brandController.text,
                       );
 
                       brandController.clear();
@@ -107,11 +111,13 @@ class _AddingDataState extends State<AddingData> {
   Future<dynamic> forBottomSheet(
     BuildContext context,
     double kHeight,
+    double kWidth,
   ) {
     return showModalBottomSheet(
       context: context,
       builder: (context) => SizedBox(
         height: kHeight * 0.1,
+        width: kWidth,
         child: Column(
           children: [
             Text(
@@ -139,4 +145,25 @@ class _AddingDataState extends State<AddingData> {
       ),
     );
   }
+}
+
+Future<void> addToFire(
+  XFile? anImage,
+  String anUrl,
+  CollectionReference forAddingRef,
+  String forAnId,
+  String theBrandName,
+) async {
+  final uniqueName = DateTime.now().toString();
+  final fireStorageRef = FirebaseStorage.instance;
+  final file = File(anImage!.path);
+  final toStorage =
+      await fireStorageRef.ref().child("image/$uniqueName").putFile(file);
+  final downLoadUrl = await toStorage.ref.getDownloadURL();
+  anUrl = downLoadUrl;
+  BrandAdding(
+      anImageUrl: anUrl,
+      anBrandName: theBrandName,
+      anId: forAnId,
+      anColectRef: forAddingRef);
 }

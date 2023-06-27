@@ -18,6 +18,10 @@ class BrandAdding {
       "brandName": anBrandName,
       "brandId": anId,
     };
-    anColectRef.doc(anId).set(addingData);
+     anColectRef.doc(anId).set(addingData);
   }
 }
+
+
+
+

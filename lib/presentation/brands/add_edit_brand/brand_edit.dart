@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:run_away_admin/core/constants.dart';
+import 'package:run_away_admin/models/brand/brand_editing_class.dart';
+import 'package:run_away_admin/presentation/widgets/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
 
 class EditBrand extends StatefulWidget {
@@ -23,7 +25,7 @@ class EditBrand extends StatefulWidget {
 }
 
 class _EditBrandState extends State<EditBrand> {
-  final brandCollection = FirebaseFirestore.instance.collection('admin');
+  final brandCollection = FirebaseFirestore.instance.collection('brands');
 
   String imageUrl = "";
 
@@ -56,6 +58,7 @@ class _EditBrandState extends State<EditBrand> {
   @override
   Widget build(BuildContext context) {
     final kHeight = MediaQuery.of(context).size.height;
+    final kWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: SafeArea(
@@ -95,21 +98,28 @@ class _EditBrandState extends State<EditBrand> {
                     },
                   );
                 },
-                child: CircleAvatar(  
-                  radius: 120,
-                  backgroundImage: anUpdateUrl == null
-                      ? NetworkImage(widget.brandImage)
-                      : FileImage(File(anUpdateUrl!.path)) as ImageProvider,
-                ),
+                child: anUpdateUrl == null
+                    ? ContainerForNetworkImage(
+                        // kHeight: kHeight * .35,
+                        // kWidth: kWidth * 0.655,
+                        imagePath: widget.brandImage,
+                      )
+                    : ContainerForImage(
+                        // kHeight: kHeight,
+                        // kWidth: kWidth,
+                        imagePath: anUpdateUrl!.path,
+                      ),
               ),
-              SizedBox(height: kHeight*0.03),
+              SizedBox(height: kHeight * 0.03),
               TheTextField(
                 anLabelText: "Brand name",
                 forMaxLine: null,
                 anController: updateController,
                 anType: TextInputType.name,
               ),
-              SizedBox(height: kHeight*0.03,),
+              SizedBox(
+                height: kHeight * 0.03,
+              ),
               ElevatedButton(
                 style: const ButtonStyle(
                   shape: MaterialStatePropertyAll(
@@ -141,21 +151,5 @@ class _EditBrandState extends State<EditBrand> {
         ),
       ),
     );
-  }
-}
-
-class EditingBrand {
-  final String brandId;
-  final String brandNameUp;
-  final String imageUrlUp;
-  final CollectionReference collectionName;
-  EditingBrand({
-    required this.brandId,
-    required this.brandNameUp,
-    required this.imageUrlUp,
-    required this.collectionName,
-  }) {
-    final updateData = {"imageName": imageUrlUp, "brandName": brandNameUp};
-    collectionName.doc(brandId).update(updateData);
   }
 }
