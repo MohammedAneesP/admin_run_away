@@ -3,22 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:run_away_admin/application/brand_image_bloc/brand_image_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
 import 'package:run_away_admin/models/brand/brand_adding_class.dart';
 import 'package:run_away_admin/presentation/widgets/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
 
-class AddingData extends StatefulWidget {
-  const AddingData({super.key});
+class AddingData extends StatelessWidget {
+   AddingData({super.key});
 
-  @override
-  State<AddingData> createState() => _AddingDataState();
-}
-
-class _AddingDataState extends State<AddingData> {
-  XFile? anImage;
+  XFile? theImage;
 
   String anUrl = "";
 
@@ -35,7 +32,10 @@ class _AddingDataState extends State<AddingData> {
         backgroundColor: kWhite.withOpacity(0),
         shadowColor: Colors.transparent,
         centerTitle: true,
-        title: Text("Add new".toUpperCase(),style: kTitleText,),
+        title: Text(
+          "Add new".toUpperCase(),
+          style: kTitleText,
+        ),
         leading: IconButton(
             icon: const Icon(
               CupertinoIcons.back,
@@ -45,8 +45,8 @@ class _AddingDataState extends State<AddingData> {
               Navigator.of(context).pop();
             }),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: SafeArea(
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -54,10 +54,41 @@ class _AddingDataState extends State<AddingData> {
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      forBottomSheet(context, kHeight,kWidth);
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => SizedBox(
+                          height: kHeight * 0.1,
+                          width: kWidth,
+                          child: Column(
+                            children: [
+                              Text(
+                                "Add picture",
+                                style: kSubTitleText,
+                              ),
+                              BlocProvider(
+                                create: (context) => BrandImageBloc(),
+                                child: IconButton(
+                                  icon: const Icon(
+                                    CupertinoIcons.photo_fill,
+                                    size: 30,
+                                  ),
+                                  onPressed: () async {
+                                    BlocProvider.of<BrandImageBloc>(context)
+                                        .add(AddingImage());
+      
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
                     },
-                    child: anImage == null
-                        ? CircleAvatar(
+                    child: BlocBuilder<BrandImageBloc, BrandImageState>(
+                      builder: (context, state) {
+                        if (state.anImage == null) {
+                          return CircleAvatar(
                             radius: kHeight * 0.13,
                             backgroundColor: kBlack.withOpacity(0.1),
                             child: const Icon(
@@ -65,9 +96,15 @@ class _AddingDataState extends State<AddingData> {
                               size: 50,
                               color: kBlack,
                             ),
-                          )
-                        : ContainerForImage( imagePath:anImage!.path),
-                        
+                          );
+                          
+                        }else {
+                          theImage = state.anImage;
+                         return ContainerForImage(imagePath: theImage!.path);
+                        }
+                      },
+                    )
+                   
                   ),
                   SizedBox(height: kHeight * 0.02),
                   TheTextField(
@@ -83,16 +120,16 @@ class _AddingDataState extends State<AddingData> {
                       ),
                     ),
                     onPressed: () async {
-                      addToFire(
-                        anImage,
+                   ForAddingToFire().addToFire(
+                        theImage,
                         anUrl,
                         brandCollection,
                         brandCollection.doc().id,
                         brandController.text,
                       );
-
+                      BlocProvider.of<BrandImageBloc>(context).add(RemoveImage());
                       brandController.clear();
-
+      
                       Navigator.of(context).pop();
                     },
                     child: const Text(
@@ -107,47 +144,13 @@ class _AddingDataState extends State<AddingData> {
       ),
     );
   }
-
-  Future<dynamic> forBottomSheet(
-    BuildContext context,
-    double kHeight,
-    double kWidth,
-  ) {
-    return showModalBottomSheet(
-      context: context,
-      builder: (context) => SizedBox(
-        height: kHeight * 0.1,
-        width: kWidth,
-        child: Column(
-          children: [
-            Text(
-              "Add picture",
-              style: kSubTitleText,
-            ),
-            IconButton(
-              icon: const Icon(
-                CupertinoIcons.photo_fill,
-                size: 30,
-              ),
-              onPressed: () async {
-                final pickImage = await ImagePicker().pickImage(
-                  source: ImageSource.gallery,
-                );
-
-                setState(() {
-                  anImage = pickImage;
-                });
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        ),
-      ),
-    );
-  }
 }
 
-Future<void> addToFire(
+
+
+
+class ForAddingToFire {
+  Future<void> addToFire(
   XFile? anImage,
   String anUrl,
   CollectionReference forAddingRef,
@@ -166,4 +169,5 @@ Future<void> addToFire(
       anBrandName: theBrandName,
       anId: forAnId,
       anColectRef: forAddingRef);
+}
 }

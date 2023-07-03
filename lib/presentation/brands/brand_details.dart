@@ -21,11 +21,11 @@ class BrandDetails extends StatelessWidget {
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor:kWhite,
+      backgroundColor: kWhite.withOpacity(0.95),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const AddingData(),
+            builder: (context) =>  AddingData(),
           ));
         },
         child: const Icon(Icons.add),
@@ -37,7 +37,7 @@ class BrandDetails extends StatelessWidget {
           style: kTitleText,
         ),
         shadowColor: kWhite.withOpacity(0),
-        backgroundColor:kWhite,
+        backgroundColor: kWhite.withOpacity(0),
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop();
@@ -53,6 +53,9 @@ class BrandDetails extends StatelessWidget {
         child: StreamBuilder(
           stream: brandCollection.orderBy("brandName").snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            }
             if (snapshot.hasData) {
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -69,8 +72,7 @@ class BrandDetails extends StatelessWidget {
 
                   return Container(
                     decoration: BoxDecoration(
-                        color: kGrey.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(15)),
+                        color: kWhite, borderRadius: BorderRadius.circular(15)),
                     height: kHeight * 1,
                     width: kWidth * 1,
                     child: Column(
@@ -91,11 +93,10 @@ class BrandDetails extends StatelessWidget {
                                   ),
                                   PopupMenuItem(
                                     child: AnEditButton(
-                                      anOnPressed: () async{
+                                      anOnPressed: () async {
                                         Navigator.pop(context);
                                         await Navigator.of(context).push(
                                           MaterialPageRoute(
-
                                             builder: (context) => EditBrand(
                                               brandImage:
                                                   brandSnapshot["imageName"],
@@ -105,7 +106,7 @@ class BrandDetails extends StatelessWidget {
                                             ),
                                           ),
                                         );
-                                       // 
+                                        //
                                       },
                                     ),
                                   ),

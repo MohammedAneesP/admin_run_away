@@ -11,8 +11,6 @@ class ProductAddingClass {
     required List<dynamic> theSize,
     required String brandId,
   }) async {
-    //final uniqueIdName = DateTime.now().toString();
-
     await proAddRef.doc(oneId).set({
       "itemName": theItemName,
       "price": theItemPrice,
@@ -20,8 +18,7 @@ class ProductAddingClass {
       "productImages": theImageUrls,
       "shoeSize": theSize,
       "productId": oneId,
-      "brandId":brandId,
-
+      "brandId": brandId,
     });
   }
 }

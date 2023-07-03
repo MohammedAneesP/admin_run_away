@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -16,6 +15,7 @@ class ProductEdit extends StatefulWidget {
   final String brandId;
   final String productId;
   final String productName;
+
   final String productPrice;
   final String description;
   final List<dynamic> listOfImages;
@@ -56,14 +56,17 @@ class _ProductEditState extends State<ProductEdit> {
 
   final brandREf = FirebaseFirestore.instance.collection("brands");
 
-  String? anSelected;
+  dynamic anSelected;
 
-  Set <String> brandList = {};
+  Set<String> brandList = {};
 
-  Set <String> brandId = {};
+  Set<String> theBrandId = {};
 
   @override
   Widget build(BuildContext context) {
+    final brandRefName =
+        FirebaseFirestore.instance.collection("brands").doc(widget.brandId);
+
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -91,8 +94,6 @@ class _ProductEditState extends State<ProductEdit> {
                       return Stack(
                         children: [
                           ContainerForNetworkImage(
-                            // kHeight: kHeight * .8,
-                            // kWidth: kWidth * .9,
                             imagePath: imageList[index],
                           ),
                           Positioned(
@@ -209,11 +210,25 @@ class _ProductEditState extends State<ProductEdit> {
                       final brandSnapShot = snapshot.data!.docs;
 
                       for (var i = 0; i < brandSnapShot.length; i++) {
-                        brandList.add(brandSnapShot[i]["brandName"].toString());
-                        brandId.add(brandSnapShot[i]["brandId"].toString());
+                        brandList.add(brandSnapShot[i]["brandName"]
+                            .toString()
+                            .toUpperCase());
+                        theBrandId.add(brandSnapShot[i]["brandId"]
+                            .toString()
+                            .toUpperCase());
                       }
 
                       return DropdownButton<String>(
+                        // hint: Text(snapshot.data!.docs[),
+                        hint: StreamBuilder(
+                          stream: brandRefName.snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text(snapshot.data!["brandName"]);
+                            }
+                            return const Text("Select Brand");
+                          },
+                        ),
                         value: anSelected,
                         items: brandList
                             .map<DropdownMenuItem<String>>((String value) {
@@ -237,15 +252,12 @@ class _ProductEditState extends State<ProductEdit> {
                 ElevatedButton(
                     style: buttonStyleRound,
                     onPressed: () async {
-                      final forBrandId = brandId.toList();
+                      final forBrandId = theBrandId.toList();
                       final forBrandName = brandList.toList();
-                      log(forBrandId.toString());
-                      log(forBrandName.toString());
 
                       final theIndex = forBrandName
                           .indexWhere((element) => element == anSelected);
 
-                      log(theIndex.toString());
                       UpdatingProducts(
                         brandId: forBrandId[theIndex],
                         productId: widget.productId,
@@ -254,7 +266,6 @@ class _ProductEditState extends State<ProductEdit> {
                         productDescription: descriptController.text,
                         imageList: imageList,
                         shoeSize: editSizeList,
-
                       );
                       Navigator.pop(context);
                     },

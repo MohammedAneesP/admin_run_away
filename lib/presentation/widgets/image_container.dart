@@ -17,10 +17,10 @@ class ContainerForImage extends StatelessWidget {
     final kWidth = MediaQuery.of(context).size.width;
     return Container(
       height: kHeight * .35,
-      width: kWidth * 0.7,
+      width: kWidth * 0.9,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: kBlack.withOpacity(0.1),
+        color: kBlack.withOpacity(0.05),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -58,7 +58,7 @@ class ContainerForNetworkImage extends StatelessWidget {
     final kWidth = MediaQuery.of(context).size.width;
     return Container(
       height: kHeight * .35,
-      width: kWidth * 0.7,
+      width: kWidth * 0.9,
       decoration: BoxDecoration(
         color: kBlack.withOpacity(0.1),
         shape: BoxShape.circle,

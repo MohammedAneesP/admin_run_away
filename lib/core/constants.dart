@@ -11,9 +11,16 @@ final kHeadingText = GoogleFonts.roboto(
 final kSubTitleText = GoogleFonts.roboto(
     fontWeight: FontWeight.bold, fontSize: 16, color: kBlack);
 
-final kitalicText = GoogleFonts.roboto(fontStyle: FontStyle.italic,fontWeight: FontWeight.w300,fontSize: 16,color: kBlue);
-final kitalicSmallText = GoogleFonts.roboto(fontStyle: FontStyle.italic,fontWeight: FontWeight.w300,fontSize: 14,color: kBlue);
-
+final kitalicText = GoogleFonts.roboto(
+    fontStyle: FontStyle.italic,
+    fontWeight: FontWeight.w300,
+    fontSize: 16,
+    color: kBlue);
+final kitalicSmallText = GoogleFonts.roboto(
+    fontStyle: FontStyle.italic,
+    fontWeight: FontWeight.w300,
+    fontSize: 14,
+    color: kBlue);
 
 final buttonStyleRound = ButtonStyle(
   shape: const MaterialStatePropertyAll(
@@ -23,12 +30,17 @@ final buttonStyleRound = ButtonStyle(
   elevation: MaterialStateProperty.all(5),
 );
 
-void snackBar(BuildContext context, String aText) {
+void anSnackBarFunc(
+    {required BuildContext context,
+    required String aText,
+    required Color anColor}) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text(
-        aText,
-      ),
+      content: Text(aText),
+      margin:const EdgeInsets.all(20),
+      behavior: SnackBarBehavior.floating,
+      duration: const Duration(seconds: 3),
+      backgroundColor: anColor,
     ),
   );
 }

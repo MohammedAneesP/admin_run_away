@@ -1,20 +1,24 @@
-
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:run_away_admin/application/product_image/product_image_bloc.dart';
+import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
 import 'package:run_away_admin/models/product/adding_products_class.dart';
 import 'package:run_away_admin/presentation/widgets/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/round_button.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
+import 'widgets/drop_down_widget.dart';
 
 final List<dynamic> shoeSize = [6, 7, 8, 9, 10, 11, 12];
 
 final List<dynamic> addingSize = [];
+
+String? anSelected;
 
 class ProductAddingScreen extends StatefulWidget {
   const ProductAddingScreen({super.key});
@@ -25,11 +29,9 @@ class ProductAddingScreen extends StatefulWidget {
 
 class _ProductAddingScreenState extends State<ProductAddingScreen> {
   XFile? anImage;
-  List<dynamic> listOfProductImg = [];
   final List<dynamic> downloadUrls = [];
   final Set<String> brandList = {};
   final Set<String> brandId = {};
-  String? anSelected;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
@@ -43,7 +45,16 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: kWhite.withOpacity(0.95),
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: kWhite.withOpacity(0),
+        shadowColor: kWhite.withOpacity(0),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(CupertinoIcons.back)),
         centerTitle: true,
         title: Text(
           "Add new".toUpperCase(),
@@ -62,27 +73,30 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                     child: SizedBox(
                       height: kHeight * 0.3,
                       width: kWidth * 0.9,
-                      child: listOfProductImg.isEmpty
-                          ? const Center(
-                              child: Icon(
-                                CupertinoIcons.photo_fill_on_rectangle_fill,
-                                size: 150,
-                              ),
-                            )
-                          : ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: listOfProductImg.length,
-                              separatorBuilder: (context, index) => SizedBox(
-                                width: kWidth * 0.03,
-                              ),
-                              itemBuilder: (context, index) {
-                                return ContainerForImage(
-                                  // kHeight: kHeight * 0.06,
-                                  // kWidth: kWidth * .7,
-                                  imagePath: listOfProductImg[index].path,
+                      child: BlocBuilder<ProductImageBloc, ProductImageState>(
+                        builder: (context, state) {
+                          return state.imageList!.isEmpty
+                              ? const Center(
+                                  child: Icon(
+                                    CupertinoIcons.photo_fill_on_rectangle_fill,
+                                    size: 150,
+                                  ),
+                                )
+                              : ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: state.imageList!.length,
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(
+                                    width: kWidth * 0.03,
+                                  ),
+                                  itemBuilder: (context, index) {
+                                    return ContainerForImage(
+                                      imagePath: state.imageList![index].path,
+                                    );
+                                  },
                                 );
-                              },
-                            ),
+                        },
+                      ),
                     ),
                   ),
                   ElevatedButton(
@@ -99,26 +113,24 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  IconButton(
-                                    onPressed: () async {
-                                      final pickImage = await ImagePicker()
-                                          .pickImage(
-                                              source: ImageSource.gallery);
+                                  BlocProvider(
+                                    create: (context) => ProductImageBloc(),
+                                    child: IconButton(
+                                      onPressed: () async {
+                                        BlocProvider.of<ProductImageBloc>(
+                                                context)
+                                            .add(ProductImageAdding());
 
-                                      setState(() {
-                                        if (pickImage != null) {
-                                          listOfProductImg.add(pickImage);
-                                        }
-                                      });
-                                      Navigator.of(context).pop();
-                                    },
-                                    icon: const Icon(
-                                      CupertinoIcons.photo_fill,
-                                      size: 30,
+                                        Navigator.of(context).pop();
+                                      },
+                                      icon: const Icon(
+                                        CupertinoIcons.photo_fill,
+                                        size: 30,
+                                      ),
                                     ),
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -182,17 +194,10 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                               .add(brandSnapShot[i]["brandName"].toString());
                           brandId.add(brandSnapShot[i]["brandId"].toString());
                         }
-
-                        return DropdownButton<String>(
-                          value: anSelected,
-                          items: brandList
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
+                        return DropOptionsBrand(
+                          brandNames: brandList,
+                          anOption: anSelected,
+                          anOnChange: (value) {
                             setState(() {
                               anSelected = value;
                             });
@@ -207,9 +212,8 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                   ElevatedButton(
                     style: buttonStyleRound,
                     onPressed: () async {
-                    
                       final fireStorageRef = FirebaseStorage.instance;
-                      for (var element in listOfProductImg) {
+                      for (var element in theImageList) {
                         final uniqueName = DateTime.now().toString();
                         final file = File(element.path);
 
@@ -222,12 +226,9 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                       }
                       final forBrandId = brandId.toList();
                       final forBrandName = brandList.toList();
-                      
 
-                      final theIndex = forBrandName
-                          .indexWhere((element) => element == anSelected);
-
-                      
+                      final theIndex = forBrandName.indexWhere(
+                          (element) => element == anSelected.toString());
 
                       ProductAddingClass().addinProduct(
                         proAddRef: productRef,
@@ -239,9 +240,11 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                         oneId: productRef.doc().id,
                         brandId: forBrandId[theIndex],
                       );
+
                       addingSize.clear();
                       brandList.clear();
                       brandId.clear();
+                      theImageList.clear();
                       Navigator.of(context).pop();
                     },
                     child: const Text(

@@ -1,6 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:run_away_admin/presentation/home_page/admin_home.dart';
+import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_adding.dart';
+import 'application/brand_image_bloc/brand_image_bloc.dart';
+import 'application/edit_brand_bloc/edit_brand_details_bloc.dart';
+import 'application/product_image/product_image_bloc.dart';
 
 Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,12 +18,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      
-      theme: ThemeData(useMaterial3: true),
-      home: const AdminHome(),
-      debugShowCheckedModeBanner: false,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => BrandImageBloc(),
+        ),
+        BlocProvider(
+          create: (context) => EditBrandDetailsBloc(),
+        ),
+        BlocProvider(
+          create: (context) => ProductImageBloc(),
+          child: const ProductAddingScreen(),
+        ),
+      ],
+      child: MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: const AdminHome(),
+        debugShowCheckedModeBanner: false,
+      ),
     );
-    
   }
 }
