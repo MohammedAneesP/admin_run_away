@@ -6,3 +6,4 @@ abstract class ProductImageEvent {}
 class ProductImageAdding extends ProductImageEvent {}
 
 class RemoveProductImage extends ProductImageEvent {}
+

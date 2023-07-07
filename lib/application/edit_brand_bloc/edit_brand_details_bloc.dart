@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
@@ -24,9 +22,5 @@ class EditBrandDetailsBloc
         return emit(EditBrandDetailsState(anBrandMap: brandData, theError: ""));
       }
     });
-    // on<ErrorOccured>((event, emit) async {
-    //   return emit(EditBrandDetailsState(
-    //       anBrandMap: {}, theError: "an network error occured"));
-    // });
   }
 }

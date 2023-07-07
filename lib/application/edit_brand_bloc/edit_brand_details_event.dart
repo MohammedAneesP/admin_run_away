@@ -8,4 +8,3 @@ class EditBrandData extends EditBrandDetailsEvent {
   EditBrandData({required this.anId});
 }
 
-//class ErrorOccured extends EditBrandDetailsEvent {}

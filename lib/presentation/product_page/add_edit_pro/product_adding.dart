@@ -5,29 +5,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:run_away_admin/application/drop_down_bloc/drop_brand_bloc.dart';
+import 'package:run_away_admin/application/product_display_bloc/product_display_bloc.dart';
 import 'package:run_away_admin/application/product_image/product_image_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
-import 'package:run_away_admin/models/product/adding_products_class.dart';
+import 'package:run_away_admin/domain/models/product/adding_products_class.dart';
 import 'package:run_away_admin/presentation/widgets/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/round_button.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
 import 'widgets/drop_down_widget.dart';
 
 final List<dynamic> shoeSize = [6, 7, 8, 9, 10, 11, 12];
-
 final List<dynamic> addingSize = [];
-
 String? anSelected;
 
-class ProductAddingScreen extends StatefulWidget {
-  const ProductAddingScreen({super.key});
+class ProductAddingScreen extends StatelessWidget {
+  ProductAddingScreen({super.key});
 
-  @override
-  State<ProductAddingScreen> createState() => _ProductAddingScreenState();
-}
-
-class _ProductAddingScreenState extends State<ProductAddingScreen> {
   XFile? anImage;
   final List<dynamic> downloadUrls = [];
   final Set<String> brandList = {};
@@ -136,9 +131,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                         ),
                       );
                     },
-                    child: const Text(
-                      "Add picture",
-                    ),
+                    child: const Text("Add picture"),
                   ),
                   TheTextField(
                     anLabelText: "Product name",
@@ -168,9 +161,7 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                       style: kSubTitleText,
                     ),
                   ),
-                  SizedBox(
-                    height: kHeight * 0.02,
-                  ),
+                  SizedBox(height: kHeight * 0.02),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -194,13 +185,21 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                               .add(brandSnapShot[i]["brandName"].toString());
                           brandId.add(brandSnapShot[i]["brandId"].toString());
                         }
-                        return DropOptionsBrand(
-                          brandNames: brandList,
-                          anOption: anSelected,
-                          anOnChange: (value) {
-                            setState(() {
-                              anSelected = value;
-                            });
+                        return BlocBuilder<DropBrandBloc, DropBrandState>(
+                          builder: (context, state) {
+                            return DropOptionsBrand(
+                              brandNames: brandList,
+                              anHint: const Text("Select Brand"),
+                              anOption: anSelected,
+                              anOnChange: (value) {
+                                anSelected = value;
+                                BlocProvider.of<DropBrandBloc>(context).add(
+                                  AnBrandSelect(
+                                    theBrandString: value.toString(),
+                                  ),
+                                );
+                              },
+                            );
                           },
                         );
                       }
@@ -212,6 +211,14 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                   ElevatedButton(
                     style: buttonStyleRound,
                     onPressed: () async {
+                       showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                      );
                       final fireStorageRef = FirebaseStorage.instance;
                       for (var element in theImageList) {
                         final uniqueName = DateTime.now().toString();
@@ -230,22 +237,28 @@ class _ProductAddingScreenState extends State<ProductAddingScreen> {
                       final theIndex = forBrandName.indexWhere(
                           (element) => element == anSelected.toString());
 
-                      ProductAddingClass().addinProduct(
-                        proAddRef: productRef,
+                      ProductAddingClass(
                         theItemName: nameController.text,
                         theItemPrice: priceController.text,
                         theDescription: descriptController.text,
                         theImageUrls: downloadUrls,
-                        theSize: addingSize,
                         oneId: productRef.doc().id,
+                        proAddRef: productRef,
+                        theSize: addingSize,
                         brandId: forBrandId[theIndex],
                       );
+
+                      BlocProvider.of<ProductDisplayBloc>(context)
+                          .add(ProductsDisplaying());
 
                       addingSize.clear();
                       brandList.clear();
                       brandId.clear();
                       theImageList.clear();
+                      anSelected = null;
+                      anSnackBarFunc(context: context, aText: "New Product added", anColor: Colors.greenAccent);
                       Navigator.of(context).pop();
+                      Navigator.pop(context);
                     },
                     child: const Text(
                       "Submit",

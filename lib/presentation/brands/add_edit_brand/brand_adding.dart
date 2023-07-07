@@ -8,12 +8,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:run_away_admin/application/brand_image_bloc/brand_image_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
-import 'package:run_away_admin/models/brand/brand_adding_class.dart';
+import 'package:run_away_admin/domain/models/brand/brand_adding_class.dart';
 import 'package:run_away_admin/presentation/widgets/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
 
 class AddingData extends StatelessWidget {
-   AddingData({super.key});
+  AddingData({super.key});
 
   XFile? theImage;
 
@@ -52,60 +52,55 @@ class AddingData extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  GestureDetector(
-                    onTap: () async {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) => SizedBox(
-                          height: kHeight * 0.1,
-                          width: kWidth,
-                          child: Column(
-                            children: [
-                              Text(
-                                "Add picture",
-                                style: kSubTitleText,
-                              ),
-                              BlocProvider(
-                                create: (context) => BrandImageBloc(),
-                                child: IconButton(
-                                  icon: const Icon(
-                                    CupertinoIcons.photo_fill,
-                                    size: 30,
-                                  ),
-                                  onPressed: () async {
-                                    BlocProvider.of<BrandImageBloc>(context)
-                                        .add(AddingImage());
-      
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                    child: BlocBuilder<BrandImageBloc, BrandImageState>(
-                      builder: (context, state) {
-                        if (state.anImage == null) {
-                          return CircleAvatar(
-                            radius: kHeight * 0.13,
-                            backgroundColor: kBlack.withOpacity(0.1),
-                            child: const Icon(
-                              Icons.add_a_photo_outlined,
-                              size: 50,
-                              color: kBlack,
+                  GestureDetector(onTap: () async {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) => SizedBox(
+                        height: kHeight * 0.1,
+                        width: kWidth,
+                        child: Column(
+                          children: [
+                            Text(
+                              "Add picture",
+                              style: kSubTitleText,
                             ),
-                          );
-                          
-                        }else {
-                          theImage = state.anImage;
-                         return ContainerForImage(imagePath: theImage!.path);
-                        }
-                      },
-                    )
-                   
-                  ),
+                            BlocProvider(
+                              create: (context) => BrandImageBloc(),
+                              child: IconButton(
+                                icon: const Icon(
+                                  CupertinoIcons.photo_fill,
+                                  size: 30,
+                                ),
+                                onPressed: () async {
+                                  BlocProvider.of<BrandImageBloc>(context)
+                                      .add(AddingImage());
+
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  }, child: BlocBuilder<BrandImageBloc, BrandImageState>(
+                    builder: (context, state) {
+                      if (state.anImage == null) {
+                        return CircleAvatar(
+                          radius: kHeight * 0.13,
+                          backgroundColor: kBlack.withOpacity(0.1),
+                          child: const Icon(
+                            Icons.add_a_photo_outlined,
+                            size: 50,
+                            color: kBlack,
+                          ),
+                        );
+                      } else {
+                        theImage = state.anImage;
+                        return ContainerForImage(imagePath: theImage!.path);
+                      }
+                    },
+                  )),
                   SizedBox(height: kHeight * 0.02),
                   TheTextField(
                     anLabelText: "Brand name",
@@ -120,16 +115,29 @@ class AddingData extends StatelessWidget {
                       ),
                     ),
                     onPressed: () async {
-                   ForAddingToFire().addToFire(
+                      showDialog(
+                        context: context,
+                        builder: (context) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                      ForAddingToFire().addToFire(
                         theImage,
                         anUrl,
                         brandCollection,
                         brandCollection.doc().id,
                         brandController.text,
                       );
-                      BlocProvider.of<BrandImageBloc>(context).add(RemoveImage());
+                      BlocProvider.of<BrandImageBloc>(context)
+                          .add(RemoveImage());
+
                       brandController.clear();
-      
+                      anSnackBarFunc(
+                        context: context,
+                        aText: "New Brand Added",
+                        anColor: Colors.greenAccent,
+                      );
+                      Navigator.pop(context);
                       Navigator.of(context).pop();
                     },
                     child: const Text(
@@ -146,28 +154,25 @@ class AddingData extends StatelessWidget {
   }
 }
 
-
-
-
 class ForAddingToFire {
   Future<void> addToFire(
-  XFile? anImage,
-  String anUrl,
-  CollectionReference forAddingRef,
-  String forAnId,
-  String theBrandName,
-) async {
-  final uniqueName = DateTime.now().toString();
-  final fireStorageRef = FirebaseStorage.instance;
-  final file = File(anImage!.path);
-  final toStorage =
-      await fireStorageRef.ref().child("image/$uniqueName").putFile(file);
-  final downLoadUrl = await toStorage.ref.getDownloadURL();
-  anUrl = downLoadUrl;
-  BrandAdding(
-      anImageUrl: anUrl,
-      anBrandName: theBrandName,
-      anId: forAnId,
-      anColectRef: forAddingRef);
-}
+    XFile? anImage,
+    String anUrl,
+    CollectionReference forAddingRef,
+    String forAnId,
+    String theBrandName,
+  ) async {
+    final uniqueName = DateTime.now().toString();
+    final fireStorageRef = FirebaseStorage.instance;
+    final file = File(anImage!.path);
+    final toStorage =
+        await fireStorageRef.ref().child("image/$uniqueName").putFile(file);
+    final downLoadUrl = await toStorage.ref.getDownloadURL();
+    anUrl = downLoadUrl;
+    BrandAdding(
+        anImageUrl: anUrl,
+        anBrandName: theBrandName,
+        anId: forAnId,
+        anColectRef: forAddingRef);
+  }
 }

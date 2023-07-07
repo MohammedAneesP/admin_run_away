@@ -2,6 +2,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:run_away_admin/application/product_display_bloc/product_display_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants.dart';
 import 'package:run_away_admin/presentation/brands/widgets/buttons.dart';
@@ -9,27 +11,22 @@ import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_ad
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_edit.dart';
 
 class ProductDetails extends StatelessWidget {
-  const ProductDetails({super.key});
+ const ProductDetails({super.key});
 
+ 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<ProductDisplayBloc>(context).add(ProductsDisplaying());
+    });
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
     final productRef = FirebaseFirestore.instance.collection("products");
 
     return Scaffold(
       backgroundColor: kWhite.withOpacity(0.95),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(CupertinoIcons.add),
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const ProductAddingScreen(),
-            ),
-          );
-        },
-      ),
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         shadowColor: kWhite.withOpacity(0),
         backgroundColor: kWhite.withOpacity(0),
         centerTitle: true,
@@ -47,19 +44,29 @@ class ProductDetails extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(CupertinoIcons.add),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ProductAddingScreen(),
+            ),
+          );
+        },
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: StreamBuilder(
-          stream: productRef.snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            if (snapshot.hasData) {
+        child: BlocBuilder<ProductDisplayBloc, ProductDisplayState>(
+          builder: (context, state) {
+            if (state.proFireResponse.isEmpty) {
+              return const Center(
+                child: Text("No product Added"),
+              );
+            } else {
               return SizedBox(
                 height: kHeight,
                 child: GridView.builder(
-                  itemCount: snapshot.data!.docs.length,
+                  itemCount: state.proFireResponse.length,
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 250,
                     crossAxisSpacing: 15,
@@ -68,7 +75,8 @@ class ProductDetails extends StatelessWidget {
                     mainAxisExtent: 240,
                   ),
                   itemBuilder: (context, index) {
-                    final productSnap = snapshot.data!.docs[index];
+                    final productSnap = state.proFireResponse[index];
+
                     final brandName = FirebaseFirestore.instance
                         .collection("brands")
                         .doc(productSnap["brandId"]);
@@ -94,13 +102,14 @@ class ProductDetails extends StatelessWidget {
                                     return [
                                       PopupMenuItem(
                                         child: DeleteDocButton(
-                                          theDeleteId: productSnap.id,
+                                          theDeleteId: productSnap["productId"],
                                           anCollection: productRef,
                                         ),
                                       ),
                                       PopupMenuItem(
                                         child: AnEditButton(
                                           anOnPressed: () async {
+                                            Navigator.pop(context);
                                             await Navigator.of(context).push(
                                               MaterialPageRoute(
                                                 builder: (context) =>
@@ -122,7 +131,6 @@ class ProductDetails extends StatelessWidget {
                                                 ),
                                               ),
                                             );
-                                            Navigator.pop(context);
                                           },
                                         ),
                                       ),
@@ -131,16 +139,14 @@ class ProductDetails extends StatelessWidget {
                                 )
                               ],
                             ),
-                            GestureDetector(
-                              onTap: () {},
-                              child: Container(
-                                height: kHeight * .131,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: NetworkImage(
-                                        productSnap["productImages"][0]),
-                                    fit: BoxFit.contain,
-                                  ),
+                            Container(
+                              height: kHeight * .131,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                      productSnap["productImages"][0]
+                                          .toString()),
+                                  fit: BoxFit.contain
                                 ),
                               ),
                             ),
@@ -151,21 +157,26 @@ class ProductDetails extends StatelessWidget {
                                 children: [
                                   StreamBuilder(
                                     stream: brandName.snapshots(),
-                                    builder: (context, AsyncSnapshot snapshot) {
+                                    builder: (context, snapshot) {
                                       if (snapshot.hasData) {
-                                        return Text(
-                                          snapshot.data["brandName"]
-                                              .toString()
-                                              .toUpperCase(),
-                                          style: kitalicSmallText,
-                                        );
+                                        if (snapshot.data!.exists) {
+                                          return Text(
+                                            snapshot.data!["brandName"]
+                                                .toString()
+                                                .toUpperCase(),
+                                            style: kitalicSmallText
+                                          );
+                                        } else {
+                                          return const Text(
+                                              "brand name not found");
+                                        }
                                       }
                                       return const Text("Loading ... ");
                                     },
                                   ),
                                   Text(
                                     "${productSnap["itemName"]}".toUpperCase(),
-                                    style: kSubTitleText,
+                                    style: kSubTitleText
                                   ),
                                   Text("Price : ${productSnap["price"]}"),
                                 ],
@@ -179,9 +190,6 @@ class ProductDetails extends StatelessWidget {
                 ),
               );
             }
-            return const Center(
-              child: Text(" Collection not added"),
-            );
           },
         ),
       ),

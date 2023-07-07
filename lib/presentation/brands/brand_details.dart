@@ -25,12 +25,13 @@ class BrandDetails extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) =>  AddingData(),
+            builder: (context) => AddingData(),
           ));
         },
         child: const Icon(Icons.add),
       ),
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         centerTitle: true,
         title: Text(
           "Brands",
@@ -94,6 +95,17 @@ class BrandDetails extends StatelessWidget {
                                   PopupMenuItem(
                                     child: AnEditButton(
                                       anOnPressed: () async {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          },
+                                        );
+                                        Navigator.pop(context);
+
                                         Navigator.pop(context);
                                         await Navigator.of(context).push(
                                           MaterialPageRoute(
