@@ -18,37 +18,5 @@ class ProductAddingClass {
     required this.proAddRef,
     required this.theSize,
     required this.brandId,
-  }) {
-    addinProduct(
-      theItemName: theItemName,
-      theItemPrice: theItemPrice,
-      theDescription: theDescription,
-      theImageUrls: theImageUrls,
-      oneId: oneId,
-      proAddRef: proAddRef,
-      theSize: theSize,
-      brandId: brandId,
-    );
-  }
-}
-
-Future<void> addinProduct({
-  required String theItemName,
-  required String theItemPrice,
-  required String theDescription,
-  required List<dynamic> theImageUrls,
-  required String oneId,
-  required CollectionReference proAddRef,
-  required List<dynamic> theSize,
-  required String brandId,
-}) async {
-  await proAddRef.doc(oneId).set({
-    "itemName": theItemName,
-    "price": theItemPrice,
-    "description": theDescription,
-    "productImages": theImageUrls,
-    "shoeSize": theSize,
-    "productId": oneId,
-    "brandId": brandId,
-  });
+  }) ;
 }

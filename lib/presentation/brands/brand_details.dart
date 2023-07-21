@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:run_away_admin/application/brands/brand_display_bloc/brand_displaying_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
-import 'package:run_away_admin/core/constants.dart';
+import 'package:run_away_admin/core/constants/constants.dart';
 import 'package:run_away_admin/presentation/brands/add_edit_brand/brand_adding.dart';
 import 'package:run_away_admin/presentation/brands/add_edit_brand/brand_edit.dart';
-import 'widgets/buttons.dart';
+import '../widgets/buttons/buttons.dart';
 
 class BrandDetails extends StatelessWidget {
   BrandDetails({super.key});
@@ -18,6 +20,9 @@ class BrandDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<BrandDisplayingBloc>(context).add(BrandDetaiLing());
+    });
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -51,13 +56,11 @@ class BrandDetails extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: StreamBuilder(
-          stream: brandCollection.orderBy("brandName").snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            if (snapshot.hasData) {
+        child: BlocBuilder<BrandDisplayingBloc, BrandDisplayingState>(
+          builder: (context, state) {
+            if (state.brandFireResp.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 200,
@@ -66,10 +69,9 @@ class BrandDetails extends StatelessWidget {
                   childAspectRatio: 3,
                   mainAxisExtent: 250,
                 ),
-                itemCount: snapshot.data!.docs.length,
+                itemCount: state.brandFireResp.length,
                 itemBuilder: (context, index) {
-                  final DocumentSnapshot brandSnapshot =
-                      snapshot.data!.docs[index];
+                  final brandSnapshot = state.brandFireResp[index];
 
                   return Container(
                     decoration: BoxDecoration(
@@ -87,10 +89,21 @@ class BrandDetails extends StatelessWidget {
                               itemBuilder: (context) {
                                 return [
                                   PopupMenuItem(
-                                    child: DeleteDocButton(
-                                      theDeleteId: brandSnapshot.id,
-                                      anCollection: brandCollection,
-                                    ),
+                                    child: TextButton(
+                                        onPressed: () {
+                                          BlocProvider.of<BrandDisplayingBloc>(
+                                                  context)
+                                              .add(BrandDeleting(
+                                                  anBrandId: brandSnapshot[
+                                                      "brandId"]));
+                                          anSnackBarFunc(
+                                            context: context,
+                                            aText: "Deleted Successfully",
+                                            anColor: Colors.grey,
+                                          );
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("Delete")),
                                   ),
                                   PopupMenuItem(
                                     child: AnEditButton(
@@ -114,11 +127,10 @@ class BrandDetails extends StatelessWidget {
                                                   brandSnapshot["imageName"],
                                               brandNameText:
                                                   brandSnapshot["brandName"],
-                                              anId: brandSnapshot.id,
+                                              anId: brandSnapshot["brandId"],
                                             ),
                                           ),
                                         );
-                                        //
                                       },
                                     ),
                                   ),
@@ -149,11 +161,6 @@ class BrandDetails extends StatelessWidget {
                 },
               );
             }
-            return Container(
-              height: 50,
-              width: 50,
-              color: Colors.amber,
-            );
           },
         ),
       ),

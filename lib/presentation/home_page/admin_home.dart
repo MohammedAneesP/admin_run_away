@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:run_away_admin/core/color_constants.dart';
-import 'package:run_away_admin/core/constants.dart';
+import 'package:run_away_admin/core/constants/constants.dart';
 import 'package:run_away_admin/presentation/brands/brand_details.dart';
 import 'package:run_away_admin/presentation/product_page/product_details.dart';
 

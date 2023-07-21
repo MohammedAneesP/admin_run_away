@@ -3,15 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:run_away_admin/application/drop_down_bloc/drop_brand_bloc.dart';
-import 'package:run_away_admin/application/pro_edit_image/product_edit_image_bloc.dart';
-import 'package:run_away_admin/application/product_display_bloc/product_display_bloc.dart';
-import 'package:run_away_admin/application/product_edit_bloc/product_edit_bloc.dart';
-import 'package:run_away_admin/core/constants.dart';
-import 'package:run_away_admin/domain/models/product/updating_product_class.dart';
+import 'package:run_away_admin/application/products/pro_edit_image/product_edit_image_bloc.dart';
+import 'package:run_away_admin/application/products/product_display_bloc/product_display_bloc.dart';
+import 'package:run_away_admin/application/products/product_edit_bloc/product_edit_bloc.dart';
+import 'package:run_away_admin/core/constants/constants.dart';
+import 'package:run_away_admin/infrastructure/repositories/firebase/product/product_updating.dart';
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_adding.dart';
-import 'package:run_away_admin/presentation/product_page/product_details.dart';
-import 'package:run_away_admin/presentation/widgets/image_container.dart';
-import 'package:run_away_admin/presentation/widgets/round_button.dart';
+import 'package:run_away_admin/presentation/widgets/for_image/image_container.dart';
+import 'package:run_away_admin/presentation/widgets/buttons/round_button.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
 import 'widgets/drop_down_widget.dart';
 
@@ -125,8 +124,9 @@ class ProductEdit extends StatelessWidget {
                           },
                         ),
                       ),
+                      const SizedBox(height: 8),
                       ElevatedButton(
-                        style: buttonStyleRound,
+                        style: buttonStyleRoundSmall,
                         onPressed: () async {
                           showModalBottomSheet(
                             context: context,
@@ -276,7 +276,9 @@ class ProductEdit extends StatelessWidget {
                         },
                       ),
                       ElevatedButton(
+                        
                           style: buttonStyleRound,
+                          
                           onPressed: () async {
                             showDialog(
                               context: context,
@@ -289,7 +291,7 @@ class ProductEdit extends StatelessWidget {
                             final theIndex = forBrandName
                                 .indexWhere((element) => element == anSelected);
 
-                            UpdatingProducts(
+                            forUpdateProDuct(
                                 brandId: forBrandId[theIndex],
                                 productId: productId,
                                 productName: nameController.text,
@@ -302,8 +304,8 @@ class ProductEdit extends StatelessWidget {
                             forFireImages.clear();
                             brandList.clear();
                             theBrandId.clear();
-                            Navigator.pop(context);
-                            Navigator.pop(context);
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                             anSnackBarFunc(
                                 context: context,
                                 aText: "Updated Successfully",

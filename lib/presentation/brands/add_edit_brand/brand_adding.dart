@@ -1,15 +1,15 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:run_away_admin/application/brand_image_bloc/brand_image_bloc.dart';
+import 'package:run_away_admin/application/brands/brand_display_bloc/brand_displaying_bloc.dart';
+import 'package:run_away_admin/application/brands/brand_image_bloc/brand_image_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
-import 'package:run_away_admin/core/constants.dart';
-import 'package:run_away_admin/domain/models/brand/brand_adding_class.dart';
-import 'package:run_away_admin/presentation/widgets/image_container.dart';
+import 'package:run_away_admin/core/constants/constants.dart';
+import 'package:run_away_admin/infrastructure/repositories/firebase/brand/brand_adding_class.dart';
+import 'package:run_away_admin/presentation/brands/brand_details.dart';
+import 'package:run_away_admin/presentation/widgets/for_image/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
 
 class AddingData extends StatelessWidget {
@@ -25,6 +25,7 @@ class AddingData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<BrandDisplayingBloc>(context).add(BrandDetaiLing());
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -110,35 +111,40 @@ class AddingData extends StatelessWidget {
                   ),
                   ElevatedButton(
                     style: const ButtonStyle(
+                      foregroundColor: MaterialStatePropertyAll(kWhite),
+                      backgroundColor: MaterialStatePropertyAll(Colors.blue),
                       shape: MaterialStatePropertyAll(
                         StadiumBorder(),
                       ),
                     ),
-                    onPressed: () async {
+                    onPressed: ()async  {
                       showDialog(
                         context: context,
                         builder: (context) => const Center(
                           child: CircularProgressIndicator(),
                         ),
                       );
-                      ForAddingToFire().addToFire(
+                     await ForAddingToFire().addToFire(
                         theImage,
                         anUrl,
                         brandCollection,
                         brandCollection.doc().id,
                         brandController.text,
                       );
+                      BlocProvider.of<BrandDisplayingBloc>(context)
+                          .add(BrandDetaiLing());
                       BlocProvider.of<BrandImageBloc>(context)
                           .add(RemoveImage());
-
                       brandController.clear();
                       anSnackBarFunc(
                         context: context,
                         aText: "New Brand Added",
                         anColor: Colors.greenAccent,
                       );
-                      Navigator.pop(context);
                       Navigator.of(context).pop();
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => BrandDetails(),
+                      ));
                     },
                     child: const Text(
                       "Submit",
@@ -151,28 +157,5 @@ class AddingData extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class ForAddingToFire {
-  Future<void> addToFire(
-    XFile? anImage,
-    String anUrl,
-    CollectionReference forAddingRef,
-    String forAnId,
-    String theBrandName,
-  ) async {
-    final uniqueName = DateTime.now().toString();
-    final fireStorageRef = FirebaseStorage.instance;
-    final file = File(anImage!.path);
-    final toStorage =
-        await fireStorageRef.ref().child("image/$uniqueName").putFile(file);
-    final downLoadUrl = await toStorage.ref.getDownloadURL();
-    anUrl = downLoadUrl;
-    BrandAdding(
-        anImageUrl: anUrl,
-        anBrandName: theBrandName,
-        anId: forAnId,
-        anColectRef: forAddingRef);
   }
 }

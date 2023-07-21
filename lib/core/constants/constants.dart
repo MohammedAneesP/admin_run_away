@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'color_constants.dart';
+import '../color_constants.dart';
 
 final kTitleText = GoogleFonts.robotoFlex(
     fontWeight: FontWeight.bold, fontSize: 22, color: kBlack);
@@ -22,13 +22,24 @@ final kitalicSmallText = GoogleFonts.roboto(
     fontSize: 14,
     color: kBlue);
 
-final buttonStyleRound = ButtonStyle(
-  shape: const MaterialStatePropertyAll(
+const buttonStyleRound = ButtonStyle(
+  fixedSize: MaterialStatePropertyAll(Size(370, 50)),
+  foregroundColor: MaterialStatePropertyAll(kWhite),
+  backgroundColor: MaterialStatePropertyAll(Colors.blue),
+  shape: MaterialStatePropertyAll(
     StadiumBorder(),
   ),
-  shadowColor: MaterialStateProperty.all(Colors.blue),
-  elevation: MaterialStateProperty.all(5),
+);  
+
+const buttonStyleRoundSmall = ButtonStyle(
+  fixedSize: MaterialStatePropertyAll(Size(140, 45)),
+  foregroundColor: MaterialStatePropertyAll(kWhite),
+  backgroundColor: MaterialStatePropertyAll(Colors.blue),
+  shape: MaterialStatePropertyAll(
+    StadiumBorder(),
+  ),
 );
+
 
 void anSnackBarFunc(
     {required BuildContext context,
@@ -37,7 +48,7 @@ void anSnackBarFunc(
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(aText),
-      margin:const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       behavior: SnackBarBehavior.floating,
       duration: const Duration(seconds: 3),
       backgroundColor: anColor,

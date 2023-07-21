@@ -4,15 +4,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:run_away_admin/application/drop_down_bloc/drop_brand_bloc.dart';
-import 'package:run_away_admin/application/product_display_bloc/product_display_bloc.dart';
-import 'package:run_away_admin/application/product_image/product_image_bloc.dart';
+import 'package:run_away_admin/application/products/product_display_bloc/product_display_bloc.dart';
+import 'package:run_away_admin/application/products/product_image/product_image_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
-import 'package:run_away_admin/core/constants.dart';
-import 'package:run_away_admin/domain/models/product/adding_products_class.dart';
-import 'package:run_away_admin/presentation/widgets/image_container.dart';
-import 'package:run_away_admin/presentation/widgets/round_button.dart';
+import 'package:run_away_admin/core/constants/constants.dart';
+import 'package:run_away_admin/infrastructure/repositories/firebase/product/product_adding.dart';
+import 'package:run_away_admin/presentation/widgets/for_image/image_container.dart';
+import 'package:run_away_admin/presentation/widgets/buttons/round_button.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
 import 'widgets/drop_down_widget.dart';
 
@@ -23,7 +22,6 @@ String? anSelected;
 class ProductAddingScreen extends StatelessWidget {
   ProductAddingScreen({super.key});
 
-  XFile? anImage;
   final List<dynamic> downloadUrls = [];
   final Set<String> brandList = {};
   final Set<String> brandId = {};
@@ -94,8 +92,9 @@ class ProductAddingScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 8),
                   ElevatedButton(
-                    style: buttonStyleRound,
+                    style: buttonStyleRoundSmall,
                     onPressed: () async {
                       showModalBottomSheet(
                         context: context,
@@ -133,6 +132,7 @@ class ProductAddingScreen extends StatelessWidget {
                     },
                     child: const Text("Add picture"),
                   ),
+                  SizedBox(height: kHeight * 0.02),
                   TheTextField(
                     anLabelText: "Product name",
                     anController: nameController,
@@ -237,7 +237,7 @@ class ProductAddingScreen extends StatelessWidget {
                       final theIndex = forBrandName.indexWhere(
                           (element) => element == anSelected.toString());
 
-                      ProductAddingClass(
+                      addinProduct(
                         theItemName: nameController.text,
                         theItemPrice: priceController.text,
                         theDescription: descriptController.text,

@@ -5,15 +5,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:run_away_admin/application/brand_image_bloc/brand_image_bloc.dart';
-import 'package:run_away_admin/application/edit_brand_bloc/edit_brand_details_bloc.dart';
-import 'package:run_away_admin/core/constants.dart';
-import 'package:run_away_admin/domain/models/brand/brand_editing_class.dart';
-import 'package:run_away_admin/presentation/widgets/image_container.dart';
+import 'package:run_away_admin/application/brands/brand_image_bloc/brand_image_bloc.dart';
+import 'package:run_away_admin/application/brands/edit_brand_bloc/edit_brand_details_bloc.dart';
+import 'package:run_away_admin/core/color_constants.dart';
+import 'package:run_away_admin/core/constants/constants.dart';
+import 'package:run_away_admin/infrastructure/repositories/firebase/brand/brand_editing_class.dart';
+import 'package:run_away_admin/presentation/widgets/for_image/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/textfield.dart';
 
 class EditBrand extends StatelessWidget {
-   EditBrand({
+  EditBrand({
     super.key,
     required this.brandImage,
     required this.brandNameText,
@@ -23,14 +24,12 @@ class EditBrand extends StatelessWidget {
   final String brandImage;
   final String anId;
 
- 
   final brandCollection = FirebaseFirestore.instance.collection('brands');
 
   String imageUrl = "";
   XFile? anUpdateUrl;
   TextEditingController updateController = TextEditingController();
 
-  
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -115,6 +114,9 @@ class EditBrand extends StatelessWidget {
                       const SizedBox(height: 20),
                       ElevatedButton(
                         style: const ButtonStyle(
+                          foregroundColor: MaterialStatePropertyAll(kWhite),
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.blue),
                           shape: MaterialStatePropertyAll(
                             StadiumBorder(),
                           ),
@@ -129,17 +131,18 @@ class EditBrand extends StatelessWidget {
                               child: CircularProgressIndicator(),
                             ),
                           );
-                          final imageToUpdate = FirebaseStorage.instance
-                              .refFromURL(brandImage);
+                          final imageToUpdate =
+                              FirebaseStorage.instance.refFromURL(brandImage);
                           await imageToUpdate.putFile(File(anUpdateUrl!.path));
                           final anImageUrl =
                               await imageToUpdate.getDownloadURL();
 
-                          EditingBrand(
+                          await updatingBrandFire(
                             brandId: anId,
                             brandNameUp: updateController.text,
                             imageUrlUp: anImageUrl,
                             collectionName: brandCollection,
+                            context: context
                           );
                           anSnackBarFunc(
                             context: context,
@@ -149,6 +152,7 @@ class EditBrand extends StatelessWidget {
                           updateController.clear();
                           BlocProvider.of<BrandImageBloc>(context)
                               .add(RemoveImage());
+
                           Navigator.of(context).pop();
                           Navigator.of(context).pop();
                         },

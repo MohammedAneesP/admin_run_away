@@ -1,19 +1,17 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:run_away_admin/application/product_display_bloc/product_display_bloc.dart';
+import 'package:run_away_admin/application/products/product_display_bloc/product_display_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
-import 'package:run_away_admin/core/constants.dart';
-import 'package:run_away_admin/presentation/brands/widgets/buttons.dart';
+import 'package:run_away_admin/core/constants/constants.dart';
+import 'package:run_away_admin/presentation/widgets/buttons/buttons.dart';
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_adding.dart';
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_edit.dart';
 
 class ProductDetails extends StatelessWidget {
- const ProductDetails({super.key});
+  const ProductDetails({super.key});
 
- 
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -21,7 +19,6 @@ class ProductDetails extends StatelessWidget {
     });
     final kHeight = MediaQuery.of(context).size.height;
     final kWidth = MediaQuery.of(context).size.width;
-    final productRef = FirebaseFirestore.instance.collection("products");
 
     return Scaffold(
       backgroundColor: kWhite.withOpacity(0.95),
@@ -38,19 +35,14 @@ class ProductDetails extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          icon: const Icon(
-            CupertinoIcons.back,
-            color: kBlack,
-          ),
+          icon: const Icon(CupertinoIcons.back, color: kBlack),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(CupertinoIcons.add),
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ProductAddingScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => ProductAddingScreen()),
           );
         },
       ),
@@ -68,15 +60,13 @@ class ProductDetails extends StatelessWidget {
                 child: GridView.builder(
                   itemCount: state.proFireResponse.length,
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 250,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                    childAspectRatio: 5,
-                    mainAxisExtent: 240,
-                  ),
+                      maxCrossAxisExtent: 250,
+                      crossAxisSpacing: 15,
+                      mainAxisSpacing: 15,
+                      childAspectRatio: 5,
+                      mainAxisExtent: 240),
                   itemBuilder: (context, index) {
                     final productSnap = state.proFireResponse[index];
-
                     final brandName = FirebaseFirestore.instance
                         .collection("brands")
                         .doc(productSnap["brandId"]);
@@ -101,11 +91,23 @@ class ProductDetails extends StatelessWidget {
                                   itemBuilder: (context) {
                                     return [
                                       PopupMenuItem(
-                                        child: DeleteDocButton(
-                                          theDeleteId: productSnap["productId"],
-                                          anCollection: productRef,
-                                        ),
-                                      ),
+                                          child: TextButton(
+                                              onPressed: () {
+                                                BlocProvider.of<
+                                                            ProductDisplayBloc>(
+                                                        context)
+                                                    .add(ProductDeleting(
+                                                        anProductId:
+                                                            productSnap[
+                                                                "productId"]));
+                                                Navigator.pop(context);
+                                                anSnackBarFunc(
+                                                  context: context,
+                                                  aText: "Deleted Successfully",
+                                                  anColor: Colors.grey,
+                                                );
+                                              },
+                                              child: const Text("Delete"))),
                                       PopupMenuItem(
                                         child: AnEditButton(
                                           anOnPressed: () async {
@@ -143,11 +145,10 @@ class ProductDetails extends StatelessWidget {
                               height: kHeight * .131,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage(
-                                      productSnap["productImages"][0]
-                                          .toString()),
-                                  fit: BoxFit.contain
-                                ),
+                                    image: NetworkImage(
+                                        productSnap["productImages"][0]
+                                            .toString()),
+                                    fit: BoxFit.contain),
                               ),
                             ),
                             Padding(
@@ -161,11 +162,10 @@ class ProductDetails extends StatelessWidget {
                                       if (snapshot.hasData) {
                                         if (snapshot.data!.exists) {
                                           return Text(
-                                            snapshot.data!["brandName"]
-                                                .toString()
-                                                .toUpperCase(),
-                                            style: kitalicSmallText
-                                          );
+                                              snapshot.data!["brandName"]
+                                                  .toString()
+                                                  .toUpperCase(),
+                                              style: kitalicSmallText);
                                         } else {
                                           return const Text(
                                               "brand name not found");
@@ -175,9 +175,9 @@ class ProductDetails extends StatelessWidget {
                                     },
                                   ),
                                   Text(
-                                    "${productSnap["itemName"]}".toUpperCase(),
-                                    style: kSubTitleText
-                                  ),
+                                      "${productSnap["itemName"]}"
+                                          .toUpperCase(),
+                                      style: kSubTitleText),
                                   Text("Price : ${productSnap["price"]}"),
                                 ],
                               ),

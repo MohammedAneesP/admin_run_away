@@ -24,5 +24,18 @@ class ProductDisplayBloc
             proFireResponse: respData, errorMessage: "errorMessage"));
       }
     });
+    on<ProductDeleting>((event, emit) async {
+      final allProducts = FirebaseFirestore.instance.collection("products");
+      await allProducts.doc(event.anProductId).delete();
+      final theProducts = await allProducts.get();
+      final products = theProducts.docs;
+      if (products.isEmpty) {
+        return emit(ProductDisplayState(
+            proFireResponse: [], errorMessage: "No products"));
+      } else {
+        return emit(
+            ProductDisplayState(proFireResponse: products, errorMessage: ""));
+      }
+    });
   }
 }
