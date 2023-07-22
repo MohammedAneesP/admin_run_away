@@ -1,26 +1,9 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:run_away_admin/application/brands/brand_display_bloc/brand_displaying_bloc.dart';
-
-// class EditingBrand {
-//   final String brandId;
-//   final String brandNameUp;
-//   final String imageUrlUp;
-//   final CollectionReference collectionName;
-//   EditingBrand({
-//     required this.brandId,
-//     required this.brandNameUp,
-//     required this.imageUrlUp,
-//     required this.collectionName,
-//   }) {
-//     // updatingBrandFire(
-//     //   brandId: brandId,
-//     //   brandNameUp: brandNameUp,
-//     //   imageUrlUp: imageUrlUp,
-//     //   collectionName: collectionName,
-//     // );
-//   }
-// }
+import 'package:run_away_admin/domain/models/brand/brands.dart';
 
 Future<void> updatingBrandFire({
   required String brandId,
@@ -29,10 +12,18 @@ Future<void> updatingBrandFire({
   required CollectionReference collectionName,
   required context,
 }) async {
-  final anUpdatingMap = {
-    "imageName": imageUrlUp,
-    "brandName": brandNameUp,
-  };
-  await collectionName.doc(brandId).update(anUpdatingMap);
-  BlocProvider.of<BrandDisplayingBloc>(context).add(BrandDetaiLing());
+  Brand anBrand;
+  anBrand = Brand(
+    brandName: brandNameUp,
+    imageName: imageUrlUp,
+    brandId: brandId,
+  );
+
+  try {
+    final upbrand = anBrand.toJson();
+    await collectionName.doc(brandId).update(upbrand);
+    BlocProvider.of<BrandDisplayingBloc>(context).add(BrandDetaiLing());
+  } catch (e) {
+    log(e.toString());
+  }
 }

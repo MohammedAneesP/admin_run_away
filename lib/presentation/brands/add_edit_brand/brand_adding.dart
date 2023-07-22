@@ -128,8 +128,8 @@ class AddingData extends StatelessWidget {
                         theImage,
                         anUrl,
                         brandController.text,
-                        // brandCollection,
-                        // brandCollection.doc().id,
+                        brandCollection,
+                        brandCollection.doc().id,
                         
                       );
                       BlocProvider.of<BrandDisplayingBloc>(context)
