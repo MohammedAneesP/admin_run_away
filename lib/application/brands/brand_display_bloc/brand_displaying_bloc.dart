@@ -18,7 +18,9 @@ class BrandDisplayingBloc
         return emit(
             BrandDisplayingState(brandFireResp: [], errorMessage: "No data"));
       } else {
+        //log(brandResp[0].data().toString());
         return emit(
+          
             BrandDisplayingState(brandFireResp: brandResp, errorMessage: ""));
       }
     });

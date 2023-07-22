@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:run_away_admin/application/products/product_display_bloc/product_display_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants/constants.dart';
-import 'package:run_away_admin/presentation/widgets/buttons/buttons.dart';
+import 'package:run_away_admin/presentation/widgets/buttons/edit_button.dart';
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_adding.dart';
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_edit.dart';
 

@@ -127,9 +127,10 @@ class AddingData extends StatelessWidget {
                      await ForAddingToFire().addToFire(
                         theImage,
                         anUrl,
-                        brandCollection,
-                        brandCollection.doc().id,
                         brandController.text,
+                        // brandCollection,
+                        // brandCollection.doc().id,
+                        
                       );
                       BlocProvider.of<BrandDisplayingBloc>(context)
                           .add(BrandDetaiLing());

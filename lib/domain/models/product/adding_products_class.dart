@@ -1,22 +1,44 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-class ProductAddingClass {
-  final String theItemName;
-  final String theItemPrice;
-  final String theDescription;
-  final List<dynamic> theImageUrls;
-  final String oneId;
-  final CollectionReference proAddRef;
-  final List<dynamic> theSize;
+class Product {
+  final String itemName;
+  final List<String> productImages;
+  final List<int> shoeSize;
+  final String productId;
+  final double price;
   final String brandId;
-  ProductAddingClass({
-    required this.theItemName,
-    required this.theItemPrice,
-    required this.theDescription,
-    required this.theImageUrls,
-    required this.oneId,
-    required this.proAddRef,
-    required this.theSize,
+  final String description;
+
+  Product({
+    required this.itemName,
+    required this.productImages,
+    required this.shoeSize,
+    required this.productId,
+    required this.price,
     required this.brandId,
-  }) ;
+    required this.description,
+  });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      itemName: json['itemName'],
+      productImages: List<String>.from(json['productImages']),
+      shoeSize: List<int>.from(json['shoeSize']),
+      productId: json['productId'],
+      price: json['price'].toDouble(),
+      brandId: json['brandId'],
+      description: json['description'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'itemName': itemName,
+      'productImages': productImages,
+      'shoeSize': shoeSize,
+      'productId': productId,
+      'price': price,
+      'brandId': brandId,
+      'description': description,
+    };
+  }
 }
+

@@ -7,7 +7,7 @@ import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants/constants.dart';
 import 'package:run_away_admin/presentation/brands/add_edit_brand/brand_adding.dart';
 import 'package:run_away_admin/presentation/brands/add_edit_brand/brand_edit.dart';
-import '../widgets/buttons/buttons.dart';
+import '../widgets/buttons/edit_button.dart';
 
 class BrandDetails extends StatelessWidget {
   BrandDetails({super.key});
