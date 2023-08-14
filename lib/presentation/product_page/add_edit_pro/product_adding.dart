@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:run_away_admin/application/drop_down_bloc/drop_brand_bloc.dart';
+import 'package:run_away_admin/application/products/drop_down_bloc/drop_brand_bloc.dart';
 import 'package:run_away_admin/application/products/product_display_bloc/product_display_bloc.dart';
 import 'package:run_away_admin/application/products/product_image/product_image_bloc.dart';
 import 'package:run_away_admin/core/color_constants.dart';
@@ -12,7 +12,7 @@ import 'package:run_away_admin/core/constants/constants.dart';
 import 'package:run_away_admin/infrastructure/repositories/firebase/product/product_adding.dart';
 import 'package:run_away_admin/presentation/widgets/for_image/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/buttons/round_button.dart';
-import 'package:run_away_admin/presentation/widgets/textfield.dart';
+import 'package:run_away_admin/presentation/widgets/textfield/textfield.dart';
 import 'widgets/drop_down_widget.dart';
 
 final List<dynamic> shoeSize = [6, 7, 8, 9, 10, 11, 12];
@@ -32,6 +32,8 @@ class ProductAddingScreen extends StatelessWidget {
 
   final productRef = FirebaseFirestore.instance.collection("products");
   final brandREf = FirebaseFirestore.instance.collection("brands");
+
+  final ValueNotifier<int> inStock = ValueNotifier(1);
 
   @override
   Widget build(BuildContext context) {
@@ -155,6 +157,41 @@ class ProductAddingScreen extends StatelessWidget {
                   ),
                   SizedBox(height: kHeight * 0.008),
                   Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 320, 0),
+                      child: Text("Stock :", style: kSubTitleText)),
+                  ValueListenableBuilder(
+                    valueListenable: inStock,
+                    builder: (context, value, child) {
+                      return Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              if (inStock.value > 1) {
+                                inStock.value -= 1;
+                              } else {
+                                return;
+                              }
+                            },
+                            style: const ButtonStyle(
+                                shape:
+                                    MaterialStatePropertyAll(CircleBorder())),
+                            child: const Icon(Icons.remove),
+                          ),
+                          Text(inStock.value.toString()),
+                          ElevatedButton(
+                            onPressed: () {
+                              inStock.value += 1;
+                            },
+                            style: const ButtonStyle(
+                                shape:
+                                    MaterialStatePropertyAll(CircleBorder())),
+                            child: const Icon(Icons.add),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  Padding(
                     padding: const EdgeInsets.fromLTRB(0, 10, 320, 0),
                     child: Text(
                       "Size :",
@@ -211,7 +248,7 @@ class ProductAddingScreen extends StatelessWidget {
                   ElevatedButton(
                     style: buttonStyleRound,
                     onPressed: () async {
-                       showDialog(
+                      showDialog(
                         context: context,
                         builder: (context) {
                           return const Center(
@@ -238,6 +275,7 @@ class ProductAddingScreen extends StatelessWidget {
                           (element) => element == anSelected.toString());
 
                       addinProduct(
+                        anStock: inStock.value.toString(),
                         theItemName: nameController.text,
                         theItemPrice: priceController.text,
                         theDescription: descriptController.text,
@@ -247,7 +285,7 @@ class ProductAddingScreen extends StatelessWidget {
                         theSize: addingSize,
                         brandId: forBrandId[theIndex],
                       );
-
+                      BlocProvider.of<ProductImageBloc>(context).add(RemoveProductImage());
                       BlocProvider.of<ProductDisplayBloc>(context)
                           .add(ProductsDisplaying());
 
@@ -256,7 +294,10 @@ class ProductAddingScreen extends StatelessWidget {
                       brandId.clear();
                       theImageList.clear();
                       anSelected = null;
-                      anSnackBarFunc(context: context, aText: "New Product added", anColor: Colors.greenAccent);
+                      anSnackBarFunc(
+                          context: context,
+                          aText: "New Product added",
+                          anColor: Colors.greenAccent);
                       Navigator.of(context).pop();
                       Navigator.pop(context);
                     },

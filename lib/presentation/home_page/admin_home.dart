@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants/constants.dart';
+import 'package:run_away_admin/domain/services/frbs_auth_methods.dart';
 import 'package:run_away_admin/presentation/brands/brand_details.dart';
+import 'package:run_away_admin/presentation/login_sign_up_pages/login_page.dart';
 import 'package:run_away_admin/presentation/product_page/product_details.dart';
 
 class AdminHome extends StatelessWidget {
@@ -22,13 +25,17 @@ class AdminHome extends StatelessWidget {
           style: kTitleText,
         ),
         shadowColor: kWhite.withOpacity(0),
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            CupertinoIcons.square_grid_2x2_fill,
-            color: kBlack,
-          ),
-        ),
+        leading: Builder(builder: (context) {
+          return IconButton(
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            icon: const Icon(
+              CupertinoIcons.square_grid_2x2_fill,
+              color: kBlack,
+            ),
+          );
+        }),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -36,10 +43,47 @@ class AdminHome extends StatelessWidget {
               radius: kWidth * 0.055,
               backgroundColor: kGrey.withOpacity(0.2),
               child: IconButton(
-                  onPressed: () {}, icon: const Icon(CupertinoIcons.bag)),
+                  onPressed: () {
+                     FireBaseAuthMethods(FirebaseAuth.instance).signOut(context);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginPage(),
+                    ),
+                  );
+                  }, icon: const Icon(CupertinoIcons.bag)),
             ),
           )
         ],
+      ),
+      drawer: Drawer(
+        backgroundColor: kGrey200,
+        child: ListView(
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+               // color: kGrey,
+              ),
+              child: CircleAvatar(
+                radius: 20,
+                child: Icon(Icons.person,size: 80,),
+              ),
+            ),
+            ListTile(
+              title: const Text("Logout"),
+              trailing:
+                  IconButton(onPressed: () {
+                    FireBaseAuthMethods(FirebaseAuth.instance).signOut(context);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginPage(),
+                    ),
+                  );
+                  }, icon: const Icon(Icons.logout)),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Padding(

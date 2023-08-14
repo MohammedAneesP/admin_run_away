@@ -10,7 +10,7 @@ import 'package:run_away_admin/core/constants/constants.dart';
 import 'package:run_away_admin/infrastructure/repositories/firebase/brand/brand_adding_class.dart';
 import 'package:run_away_admin/presentation/brands/brand_details.dart';
 import 'package:run_away_admin/presentation/widgets/for_image/image_container.dart';
-import 'package:run_away_admin/presentation/widgets/textfield.dart';
+import 'package:run_away_admin/presentation/widgets/textfield/textfield.dart';
 
 class AddingData extends StatelessWidget {
   AddingData({super.key});

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:run_away_admin/application/drop_down_bloc/drop_brand_bloc.dart';
+import 'package:run_away_admin/application/products/drop_down_bloc/drop_brand_bloc.dart';
 import 'package:run_away_admin/application/products/pro_edit_image/product_edit_image_bloc.dart';
 import 'package:run_away_admin/application/products/product_display_bloc/product_display_bloc.dart';
 import 'package:run_away_admin/application/products/product_edit_bloc/product_edit_bloc.dart';
@@ -11,7 +11,7 @@ import 'package:run_away_admin/infrastructure/repositories/firebase/product/prod
 import 'package:run_away_admin/presentation/product_page/add_edit_pro/product_adding.dart';
 import 'package:run_away_admin/presentation/widgets/for_image/image_container.dart';
 import 'package:run_away_admin/presentation/widgets/buttons/round_button.dart';
-import 'package:run_away_admin/presentation/widgets/textfield.dart';
+import 'package:run_away_admin/presentation/widgets/textfield/textfield.dart';
 import 'widgets/drop_down_widget.dart';
 
 class ProductEdit extends StatelessWidget {
@@ -22,6 +22,7 @@ class ProductEdit extends StatelessWidget {
   final String description;
   final List<dynamic> listOfImages;
   final List<dynamic> shoeSizes;
+  final String anStock;
 
   ProductEdit({
     super.key,
@@ -29,6 +30,7 @@ class ProductEdit extends StatelessWidget {
     required this.productId,
     required this.productName,
     required this.productPrice,
+    required this.anStock,
     required this.description,
     required this.listOfImages,
     required this.shoeSizes,
@@ -50,8 +52,11 @@ class ProductEdit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final val = int.parse(anStock);
+    final ValueNotifier<int> inStock = ValueNotifier(val);
     final brandRefName =
         FirebaseFirestore.instance.collection("brands").doc(brandId);
+        BlocProvider.of<ProductEditImageBloc>(context).add(RemoveAllImages());
     BlocProvider.of<ProductEditBloc>(context)
         .add(EditProductData(anId: productId));
     BlocProvider.of<ProductEditImageBloc>(context)
@@ -186,6 +191,42 @@ class ProductEdit extends StatelessWidget {
                       const SizedBox(height: 8),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 10, 320, 0),
+                        child: Text("Stock :", style: kSubTitleText),
+                      ),
+                         ValueListenableBuilder(
+                    valueListenable: inStock,
+                    builder: (context, value, child) {
+                      return Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              if (inStock.value > 1) {
+                                inStock.value -= 1;
+                              } else {
+                                return;
+                              }
+                            },
+                            style: const ButtonStyle(
+                                shape:
+                                    MaterialStatePropertyAll(CircleBorder())),
+                            child: const Icon(Icons.remove),
+                          ),
+                          Text(inStock.value.toString()),
+                          ElevatedButton(
+                            onPressed: () {
+                              inStock.value += 1;
+                            },
+                            style: const ButtonStyle(
+                                shape:
+                                    MaterialStatePropertyAll(CircleBorder())),
+                            child: const Icon(Icons.add),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 320, 0),
                         child: Text("Size :", style: kSubTitleText),
                       ),
                       const SizedBox(height: 5),
@@ -276,9 +317,7 @@ class ProductEdit extends StatelessWidget {
                         },
                       ),
                       ElevatedButton(
-                        
                           style: buttonStyleRound,
-                          
                           onPressed: () async {
                             showDialog(
                               context: context,
@@ -298,7 +337,8 @@ class ProductEdit extends StatelessWidget {
                                 productPrize: priceController.text,
                                 productDescription: descriptController.text,
                                 imageList: forFireImages.toList(),
-                                shoeSize: editSizeList);
+                                shoeSize: editSizeList,
+                                anStock: inStock.value.toString());
                             BlocProvider.of<ProductDisplayBloc>(context)
                                 .add(ProductsDisplaying());
                             forFireImages.clear();

@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 
@@ -65,6 +65,10 @@ class ProductEditImageBloc
         return emit(
             ProductEditImageState(firImages: forFireImages.toList(), anErrorMessage: ""));
       }
+    });
+    on<RemoveAllImages>((event, emit)async {
+       forFireImages.clear();
+       return emit(ProductEditImageState(firImages: [], anErrorMessage: "sorry"));
     });
   }
 }

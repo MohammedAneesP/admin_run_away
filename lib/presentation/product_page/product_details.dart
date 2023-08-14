@@ -130,6 +130,7 @@ class ProductDetails extends StatelessWidget {
                                                       "productImages"],
                                                   shoeSizes:
                                                       productSnap["shoeSize"],
+                                                      anStock: productSnap["stock"],
                                                 ),
                                               ),
                                             );

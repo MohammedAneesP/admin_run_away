@@ -3,6 +3,7 @@ class Product {
   final List<dynamic> productImages;
   final List<dynamic> shoeSize;
   final String productId;
+  final String stock;
   final String price;
   final String brandId;
   final String description;
@@ -12,6 +13,7 @@ class Product {
     required this.productImages,
     required this.shoeSize,
     required this.productId,
+    required this.stock,
     required this.price,
     required this.brandId,
     required this.description,
@@ -23,6 +25,7 @@ class Product {
       productImages: List<dynamic>.from(json['productImages']),
       shoeSize: List<dynamic>.from(json['shoeSize']),
       productId: json['productId'],
+      stock: json['stock'],
       price: json['price'],
       brandId: json['brandId'],
       description: json['description'],
@@ -35,6 +38,7 @@ class Product {
       'productImages': productImages,
       'shoeSize': shoeSize,
       'productId': productId,
+      'stock':stock,
       'price': price,
       'brandId': brandId,
       'description': description,

@@ -3,6 +3,8 @@ part of 'product_edit_image_bloc.dart';
 @immutable
 abstract class ProductEditImageEvent {}
 
+class RemoveAllImages extends ProductEditImageEvent{}
+
 class ProductNetImagesDisply extends ProductEditImageEvent {
 
   final String anId;

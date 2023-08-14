@@ -1,7 +1,5 @@
-import 'dart:developer';
-
-import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
 part 'brand_displaying_event.dart';
@@ -18,9 +16,7 @@ class BrandDisplayingBloc
         return emit(
             BrandDisplayingState(brandFireResp: [], errorMessage: "No data"));
       } else {
-        //log(brandResp[0].data().toString());
         return emit(
-          
             BrandDisplayingState(brandFireResp: brandResp, errorMessage: ""));
       }
     });
@@ -41,7 +37,6 @@ class BrandDisplayingBloc
           }
         }
       }
-      log(brandCollection.doc(event.anBrandId).toString());
       brandCollection.doc(event.anBrandId).delete();
       final brandsData = await brandCollection.get();
       final brands = brandsData.docs;

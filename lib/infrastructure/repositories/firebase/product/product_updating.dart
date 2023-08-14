@@ -4,6 +4,7 @@ import 'package:run_away_admin/domain/models/product/adding_products_class.dart'
 Future<void> forUpdateProDuct({
   required String productName,
   required String productPrize,
+  required String anStock,
   required String productDescription,
   required List<dynamic> imageList,
   required List<dynamic> shoeSize,
@@ -14,6 +15,7 @@ Future<void> forUpdateProDuct({
   product = Product(
     itemName: productName,
     productImages: imageList,
+    stock: anStock,
     shoeSize: shoeSize,
     productId: productId,
     price: productPrize,

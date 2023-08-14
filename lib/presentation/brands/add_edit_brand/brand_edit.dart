@@ -11,7 +11,7 @@ import 'package:run_away_admin/core/color_constants.dart';
 import 'package:run_away_admin/core/constants/constants.dart';
 import 'package:run_away_admin/infrastructure/repositories/firebase/brand/brand_editing_class.dart';
 import 'package:run_away_admin/presentation/widgets/for_image/image_container.dart';
-import 'package:run_away_admin/presentation/widgets/textfield.dart';
+import 'package:run_away_admin/presentation/widgets/textfield/textfield.dart';
 
 class EditBrand extends StatelessWidget {
   EditBrand({
@@ -142,7 +142,6 @@ class EditBrand extends StatelessWidget {
                             brandNameUp: updateController.text,
                             imageUrlUp: anImageUrl,
                             collectionName: brandCollection,
-                            context: context
                           );
                           anSnackBarFunc(
                             context: context,

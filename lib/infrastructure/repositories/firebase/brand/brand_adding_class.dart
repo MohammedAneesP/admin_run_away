@@ -22,12 +22,6 @@ class ForAddingToFire {
         await fireStorageRef.ref().child("image/$uniqueName").putFile(file);
     final downLoadUrl = await toStorage.ref.getDownloadURL();
     anUrl = downLoadUrl;
-    // addingBrangFire(
-    //   anImageUrl: anUrl,
-    //   anBrandName: theBrandName,
-    //   anId: forAnId,
-    //   anColectRef: forAddingRef,
-    // );
     newBrand(
         anImageUrl: anUrl,
         anBrandName: theBrandName,
@@ -37,19 +31,6 @@ class ForAddingToFire {
   }
 }
 
-// Future<void> addingBrangFire({
-//   required String anImageUrl,
-//   required String anBrandName,
-//   required String anId,
-//   required CollectionReference anColectRef,
-// }) async {
-//   final addingData = {
-//     "imageName": anImageUrl,
-//     "brandName": anBrandName,
-//     "brandId": anId,
-//   };
-//   await anColectRef.doc(anId).set(addingData);
-// }
 
 Future<void> newBrand({
   required String anImageUrl,
@@ -57,7 +38,6 @@ Future<void> newBrand({
   required String anBrandId,
  required CollectionReference anReference,
 }) async {
- // final anFireBaseInstance = FirebaseFirestore.instance.collection("brands");
   Brand anBrand;
   anBrand = Brand(
     brandName: anBrandName,
