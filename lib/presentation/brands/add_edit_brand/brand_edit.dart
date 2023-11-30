@@ -143,17 +143,19 @@ class EditBrand extends StatelessWidget {
                             imageUrlUp: anImageUrl,
                             collectionName: brandCollection,
                           );
-                          anSnackBarFunc(
-                            context: context,
-                            aText: "Successfully updated",
-                            anColor: Colors.blue,
-                          );
-                          updateController.clear();
-                          BlocProvider.of<BrandImageBloc>(context)
-                              .add(RemoveImage());
+                          if (context.mounted) {
+                            anSnackBarFunc(
+                              context: context,
+                              aText: "Successfully updated",
+                              anColor: Colors.blue,
+                            );
+                            updateController.clear();
+                            BlocProvider.of<BrandImageBloc>(context)
+                                .add(RemoveImage());
 
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          }
                         },
                       ),
                     ],

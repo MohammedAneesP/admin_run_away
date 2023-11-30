@@ -274,32 +274,46 @@ class ProductAddingScreen extends StatelessWidget {
                       final theIndex = forBrandName.indexWhere(
                           (element) => element == anSelected.toString());
 
+                      final Map<dynamic, dynamic> sizeStock = {};
+
+                      // Loop through each element in the addingSize list.
+                      for (var element in addingSize) {
+                        // Set each element as a key in the sizeStock map.
+                        sizeStock[element.toString()] =
+                            inStock.value.toString();
+                      }
+
                       addinProduct(
-                        anStock: inStock.value.toString(),
                         theItemName: nameController.text,
                         theItemPrice: priceController.text,
                         theDescription: descriptController.text,
                         theImageUrls: downloadUrls,
                         oneId: productRef.doc().id,
                         proAddRef: productRef,
-                        theSize: addingSize,
+                        stockAndSize: sizeStock,
                         brandId: forBrandId[theIndex],
                       );
-                      BlocProvider.of<ProductImageBloc>(context).add(RemoveProductImage());
-                      BlocProvider.of<ProductDisplayBloc>(context)
-                          .add(ProductsDisplaying());
+                      if (context.mounted) {
+                        BlocProvider.of<ProductImageBloc>(context)
+                            .add(RemoveProductImage());
+                        BlocProvider.of<ProductDisplayBloc>(context)
+                            .add(ProductsDisplaying());
+                        anSnackBarFunc(
+                            context: context,
+                            aText: "New Product added",
+                            anColor: Colors.greenAccent);
+                      }
 
                       addingSize.clear();
                       brandList.clear();
                       brandId.clear();
                       theImageList.clear();
                       anSelected = null;
-                      anSnackBarFunc(
-                          context: context,
-                          aText: "New Product added",
-                          anColor: Colors.greenAccent);
-                      Navigator.of(context).pop();
-                      Navigator.pop(context);
+
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      }
                     },
                     child: const Text(
                       "Submit",

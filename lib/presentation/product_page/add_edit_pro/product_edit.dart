@@ -21,8 +21,9 @@ class ProductEdit extends StatelessWidget {
   final String productPrice;
   final String description;
   final List<dynamic> listOfImages;
-  final List<dynamic> shoeSizes;
-  final String anStock;
+  final Map<dynamic, dynamic> theStockAndSize;
+  // final List<dynamic> shoeSizes;
+  // final String anStock;
 
   ProductEdit({
     super.key,
@@ -30,12 +31,13 @@ class ProductEdit extends StatelessWidget {
     required this.productId,
     required this.productName,
     required this.productPrice,
-    required this.anStock,
+    required this.theStockAndSize,
+    // required this.anStock,
     required this.description,
     required this.listOfImages,
-    required this.shoeSizes,
+    // required this.shoeSizes,
   });
-
+  Map<dynamic, dynamic> forSizeAndStock = {};
   List<dynamic> editSizeList = [];
   List<dynamic> imageList = [];
   List<dynamic> imageXfile = [];
@@ -52,11 +54,10 @@ class ProductEdit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final val = int.parse(anStock);
-    final ValueNotifier<int> inStock = ValueNotifier(val);
+     String forStock="";
     final brandRefName =
         FirebaseFirestore.instance.collection("brands").doc(brandId);
-        BlocProvider.of<ProductEditImageBloc>(context).add(RemoveAllImages());
+    BlocProvider.of<ProductEditImageBloc>(context).add(RemoveAllImages());
     BlocProvider.of<ProductEditBloc>(context)
         .add(EditProductData(anId: productId));
     BlocProvider.of<ProductEditImageBloc>(context)
@@ -82,7 +83,15 @@ class ProductEdit extends StatelessWidget {
                   nameController.text = state.anData["itemName"];
                   priceController.text = state.anData["price"];
                   descriptController.text = state.anData["description"];
-                  editSizeList = state.anData["shoeSize"];
+                  forSizeAndStock = state.anData["stockAndSize"];
+
+                  forSizeAndStock.forEach((key, value) {
+                    final parsingToInt = int.parse(key);
+                    editSizeList.add(parsingToInt);
+                    forStock = value;
+                  });
+                  final val = int.parse(forStock);
+                  final ValueNotifier<int> inStock = ValueNotifier(val);
                   return Column(
                     children: [
                       SizedBox(
@@ -193,38 +202,38 @@ class ProductEdit extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(0, 10, 320, 0),
                         child: Text("Stock :", style: kSubTitleText),
                       ),
-                         ValueListenableBuilder(
-                    valueListenable: inStock,
-                    builder: (context, value, child) {
-                      return Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              if (inStock.value > 1) {
-                                inStock.value -= 1;
-                              } else {
-                                return;
-                              }
-                            },
-                            style: const ButtonStyle(
-                                shape:
-                                    MaterialStatePropertyAll(CircleBorder())),
-                            child: const Icon(Icons.remove),
-                          ),
-                          Text(inStock.value.toString()),
-                          ElevatedButton(
-                            onPressed: () {
-                              inStock.value += 1;
-                            },
-                            style: const ButtonStyle(
-                                shape:
-                                    MaterialStatePropertyAll(CircleBorder())),
-                            child: const Icon(Icons.add),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                      ValueListenableBuilder(
+                        valueListenable: inStock,
+                        builder: (context, value, child) {
+                          return Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (inStock.value > 1) {
+                                    inStock.value -= 1;
+                                  } else {
+                                    return;
+                                  }
+                                },
+                                style: const ButtonStyle(
+                                    shape: MaterialStatePropertyAll(
+                                        CircleBorder())),
+                                child: const Icon(Icons.remove),
+                              ),
+                              Text(inStock.value.toString()),
+                              ElevatedButton(
+                                onPressed: () {
+                                  inStock.value += 1;
+                                },
+                                style: const ButtonStyle(
+                                    shape: MaterialStatePropertyAll(
+                                        CircleBorder())),
+                                child: const Icon(Icons.add),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 10, 320, 0),
                         child: Text("Size :", style: kSubTitleText),
@@ -329,16 +338,23 @@ class ProductEdit extends StatelessWidget {
                             final forBrandName = brandList.toList();
                             final theIndex = forBrandName
                                 .indexWhere((element) => element == anSelected);
+                            final Map<dynamic, dynamic> sizeStock = {};
 
+                            // Loop through each element in the addingSize list.
+                            for (var element in editSizeList) {
+                              // Set each element as a key in the sizeStock map.
+                              sizeStock[element.toString()] =
+                                  inStock.value.toString();
+                            }
                             forUpdateProDuct(
-                                brandId: forBrandId[theIndex],
-                                productId: productId,
-                                productName: nameController.text,
-                                productPrize: priceController.text,
-                                productDescription: descriptController.text,
-                                imageList: forFireImages.toList(),
-                                shoeSize: editSizeList,
-                                anStock: inStock.value.toString());
+                              brandId: forBrandId[theIndex],
+                              productId: productId,
+                              productName: nameController.text,
+                              productPrize: priceController.text,
+                              productDescription: descriptController.text,
+                              imageList: forFireImages.toList(),
+                              stockAndSize: sizeStock,
+                            );
                             BlocProvider.of<ProductDisplayBloc>(context)
                                 .add(ProductsDisplaying());
                             forFireImages.clear();

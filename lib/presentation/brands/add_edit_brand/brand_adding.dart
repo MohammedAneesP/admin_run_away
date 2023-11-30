@@ -117,35 +117,36 @@ class AddingData extends StatelessWidget {
                         StadiumBorder(),
                       ),
                     ),
-                    onPressed: ()async  {
+                    onPressed: () async {
                       showDialog(
                         context: context,
                         builder: (context) => const Center(
                           child: CircularProgressIndicator(),
                         ),
                       );
-                     await ForAddingToFire().addToFire(
+                      await ForAddingToFire().addToFire(
                         theImage,
                         anUrl,
                         brandController.text,
                         brandCollection,
                         brandCollection.doc().id,
-                        
                       );
-                      BlocProvider.of<BrandDisplayingBloc>(context)
-                          .add(BrandDetaiLing());
-                      BlocProvider.of<BrandImageBloc>(context)
-                          .add(RemoveImage());
-                      brandController.clear();
-                      anSnackBarFunc(
-                        context: context,
-                        aText: "New Brand Added",
-                        anColor: Colors.greenAccent,
-                      );
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => BrandDetails(),
-                      ));
+                      if (context.mounted) {
+                        BlocProvider.of<BrandDisplayingBloc>(context)
+                            .add(BrandDetaiLing());
+                        BlocProvider.of<BrandImageBloc>(context)
+                            .add(RemoveImage());
+                        brandController.clear();
+                        anSnackBarFunc(
+                          context: context,
+                          aText: "New Brand Added",
+                          anColor: Colors.greenAccent,
+                        );
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => BrandDetails(),
+                        ));
+                      }
                     },
                     child: const Text(
                       "Submit",

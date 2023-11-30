@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import 'package:run_away_admin/presentation/login_sign_up_pages/login_page.dart'
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FireBaseAuthMethods {
-
   final FirebaseAuth fireAuth;
   FireBaseAuthMethods(this.fireAuth);
   storeOnBoardInfo() async {
@@ -17,6 +15,7 @@ class FireBaseAuthMethods {
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.setInt('OnBoard', isViewed);
   }
+
   Future<void> signUpWithEmail({
     required String email,
     required String password,
@@ -27,10 +26,13 @@ class FireBaseAuthMethods {
         email: email,
         password: password,
       );
-      await sendEmailVerification(context);
-      Navigator.of(context).pop();
+      if (context.mounted) {
+        await sendEmailVerification(context);
+        Navigator.pop(context);
+      }
     } on FirebaseAuthException catch (e) {
-      anSnackBarFunc(context: context,aText:  e.message.toString(),anColor: kGrey);
+      anSnackBarFunc(
+          context: context, aText: e.message.toString(), anColor: kGrey);
     }
   }
 
@@ -47,7 +49,7 @@ class FireBaseAuthMethods {
       if (!fireAuth.currentUser!.emailVerified) {
         await fireAuth.currentUser?.sendEmailVerification();
       }
-      
+
       final createUser = FirebaseFirestore.instance.collection("users");
       createUser.doc(email);
       await storeOnBoardInfo();
@@ -57,17 +59,19 @@ class FireBaseAuthMethods {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      anSnackBarFunc(context: context,aText:  e.message.toString(),anColor: kGrey);
+      anSnackBarFunc(
+          context: context, aText: e.message.toString(), anColor: kGrey);
     }
   }
-
 
   Future<void> sendEmailVerification(BuildContext context) async {
     try {
       fireAuth.currentUser!.sendEmailVerification();
-      anSnackBarFunc(context: context,aText:  "Email verification Sent",anColor: kBlue);
+      anSnackBarFunc(
+          context: context, aText: "Email verification Sent", anColor: kBlue);
     } on FirebaseAuthException catch (e) {
-      anSnackBarFunc(context: context,aText:  e.message.toString(),anColor: kGrey);
+      anSnackBarFunc(
+          context: context, aText: e.message.toString(), anColor: kGrey);
     }
   }
 
@@ -92,7 +96,8 @@ class FireBaseAuthMethods {
     try {
       await fireAuth.signOut();
     } on FirebaseAuthException catch (e) {
-      anSnackBarFunc(context: context,aText:  e.message.toString(),anColor: kGrey);
+      anSnackBarFunc(
+          context: context, aText: e.message.toString(), anColor: kGrey);
     }
   }
 
@@ -101,7 +106,8 @@ class FireBaseAuthMethods {
     try {
       await fireAuth.sendPasswordResetEmail(email: anEmail);
     } on FirebaseAuthException catch (e) {
-      anSnackBarFunc(anColor: kGrey,context: context,aText:  e.message.toString());
+      anSnackBarFunc(
+          anColor: kGrey, context: context, aText: e.message.toString());
     }
   }
 }

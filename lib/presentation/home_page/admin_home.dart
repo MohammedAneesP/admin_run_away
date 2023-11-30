@@ -6,6 +6,7 @@ import 'package:run_away_admin/core/constants/constants.dart';
 import 'package:run_away_admin/domain/services/frbs_auth_methods.dart';
 import 'package:run_away_admin/presentation/brands/brand_details.dart';
 import 'package:run_away_admin/presentation/login_sign_up_pages/login_page.dart';
+import 'package:run_away_admin/presentation/orders/orders.dart';
 import 'package:run_away_admin/presentation/product_page/product_details.dart';
 
 class AdminHome extends StatelessWidget {
@@ -43,15 +44,7 @@ class AdminHome extends StatelessWidget {
               radius: kWidth * 0.055,
               backgroundColor: kGrey.withOpacity(0.2),
               child: IconButton(
-                  onPressed: () {
-                     FireBaseAuthMethods(FirebaseAuth.instance).signOut(context);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginPage(),
-                    ),
-                  );
-                  }, icon: const Icon(CupertinoIcons.bag)),
+                  onPressed: () {}, icon: const Icon(CupertinoIcons.bag)),
             ),
           )
         ],
@@ -62,25 +55,29 @@ class AdminHome extends StatelessWidget {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-               // color: kGrey,
-              ),
+                  // color: kGrey,
+                  ),
               child: CircleAvatar(
                 radius: 20,
-                child: Icon(Icons.person,size: 80,),
+                child: Icon(
+                  Icons.person,
+                  size: 80,
+                ),
               ),
             ),
             ListTile(
               title: const Text("Logout"),
-              trailing:
-                  IconButton(onPressed: () {
+              trailing: IconButton(
+                  onPressed: () {
                     FireBaseAuthMethods(FirebaseAuth.instance).signOut(context);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginPage(),
-                    ),
-                  );
-                  }, icon: const Icon(Icons.logout)),
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.logout)),
             ),
           ],
         ),
@@ -132,40 +129,47 @@ class AdminHome extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    "Customer Order's",
+                    "Manage Order's",
                     style: kTitleText,
                   ),
                 ],
               ),
-              SizedBox(height: kHeight * 0.03),
-              Container(
-                height: kHeight * .12,
-                decoration: BoxDecoration(
-                  color: kWhite.withOpacity(0.95),
-                  borderRadius: BorderRadius.circular(
-                    20,
+              SizedBox(height: kHeight * 0.02),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => OrderUsers(),
+                  ));
+                },
+                child: Container(
+                  height: kHeight * .12,
+                  decoration: BoxDecoration(
+                    color: kWhite.withOpacity(0.95),
+                    borderRadius: BorderRadius.circular(
+                      20,
+                    ),
                   ),
-                ),
-                child: SizedBox(
-                  height: kWidth,
-                  child: ListTile(
-                    title: Text(
-                      "Nike Air Jordan",
-                      style: kHeadingText,
-                    ),
-                    subtitle: Text(
-                      "Price : 13,000",
-                      style: kSubTitleText,
-                    ),
-                    trailing: Container(
-                      height: kHeight * 0.75,
-                      width: kWidth * 0.26,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(
-                            "assets/landing_pic_3.png",
+                  child: SizedBox(
+                    height: kWidth,
+                    child: ListTile(
+                      title: Text(
+                        "Nike Air Jordan",
+                        style: kHeadingText,
+                      ),
+                      subtitle: Text(
+                        "Price : 13,000",
+                        style: kSubTitleText,
+                      ),
+                      trailing: Container(
+                        height: kHeight * 0.75,
+                        width: kWidth * 0.26,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(
+                              "assets/landing_pic_3.png",
+                            ),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
                         ),
                       ),
                     ),

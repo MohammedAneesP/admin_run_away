@@ -24,7 +24,7 @@ class ForgotPassword extends StatelessWidget {
         }
       },
       child: Scaffold(
-       // backgroundColor: Colors.lightBlue[50],
+        // backgroundColor: Colors.lightBlue[50],
         body: SingleChildScrollView(
           child: SafeArea(
             child: Center(
@@ -80,12 +80,17 @@ class ForgotPassword extends StatelessWidget {
                                 .forgotPassword(
                                     anEmail: forgotController.text,
                                     context: context);
-                            anSnackBarFunc(context: context,aText:  "Reset email sent",anColor: kGrey);
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => LoginPage(),
-                              ),
-                            );
+                            if (context.mounted) {
+                              anSnackBarFunc(
+                                  context: context,
+                                  aText: "Reset email sent",
+                                  anColor: kGrey);
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => LoginPage(),
+                                ),
+                              );
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(

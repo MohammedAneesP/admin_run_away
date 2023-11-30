@@ -4,21 +4,19 @@ import 'package:run_away_admin/domain/models/product/adding_products_class.dart'
 Future<void> addinProduct({
   required String theItemName,
   required String theItemPrice,
-  required String anStock,
   required String theDescription,
   required List<dynamic> theImageUrls,
   required String oneId,
   required CollectionReference proAddRef,
-  required List<dynamic> theSize,
+  required Map<dynamic,dynamic> stockAndSize,
   required String brandId,
 }) async {
-  Product product;
+  Product   product;
   product = Product(
     itemName: theItemName,
     productImages: theImageUrls,
-    shoeSize: theSize,
+    stockAndSize: stockAndSize,
     productId: oneId,
-    stock: anStock,
     price: theItemPrice,
     brandId: brandId,
     description: theDescription,

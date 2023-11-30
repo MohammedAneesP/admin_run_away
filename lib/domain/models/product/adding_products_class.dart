@@ -1,9 +1,8 @@
 class Product {
   final String itemName;
   final List<dynamic> productImages;
-  final List<dynamic> shoeSize;
+  final Map<dynamic,dynamic> stockAndSize;
   final String productId;
-  final String stock;
   final String price;
   final String brandId;
   final String description;
@@ -11,9 +10,8 @@ class Product {
   Product({
     required this.itemName,
     required this.productImages,
-    required this.shoeSize,
+    required this.stockAndSize,
     required this.productId,
-    required this.stock,
     required this.price,
     required this.brandId,
     required this.description,
@@ -23,9 +21,8 @@ class Product {
     return Product(
       itemName: json['itemName'],
       productImages: List<dynamic>.from(json['productImages']),
-      shoeSize: List<dynamic>.from(json['shoeSize']),
+      stockAndSize: Map<dynamic,dynamic>.from(json['stockAndSize']),
       productId: json['productId'],
-      stock: json['stock'],
       price: json['price'],
       brandId: json['brandId'],
       description: json['description'],
@@ -36,9 +33,8 @@ class Product {
     return {
       'itemName': itemName,
       'productImages': productImages,
-      'shoeSize': shoeSize,
+      'stockAndSize': stockAndSize,
       'productId': productId,
-      'stock':stock,
       'price': price,
       'brandId': brandId,
       'description': description,
